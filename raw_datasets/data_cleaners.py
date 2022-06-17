@@ -79,6 +79,7 @@ def return_mut_df(file_df, cr9114: bool):
 
     new_df = pd.DataFrame({
         "#PDB": pdb_id,
+        "1hot": file_df['variant'],
         "Mutations": var_mutations,
         "logKD": log_kd,
         "LD": num_mutations
@@ -91,6 +92,40 @@ def filter_overlap_and_combine(df1, df2):
     """Removes overlapping entries from two dataframes and 
     returns a combined dataset given that the two are combineable FIXME"""
 
+
 def mason_etal_clean(filedf: pd.DataFrame):
     """Cleaning and filtering for Mason et al. data.
-    Filter to include only relevant information: e.g. LD, PDB, onehot encoding, mutations, ddG."""
+    Filter to include only relevant information: e.g. LD, PDB, onehot encoding, mutations, ddG.
+    NOTE: The one hot encoding here does NOT account for mutations to
+    different aas, only the position that was mutated in the original sequence."""
+
+    newdf = filedf.copy(True)
+
+    compare_to = "CSRWGGDGFYAMDYW"
+    mut_start_pos = 96
+    mutations = []
+    one_hots = []
+    cases = []
+
+    for seq in newdf["Sequence"]:
+        cases.append((compare_to, seq))
+
+    for a, b in cases:
+        muts = []
+        one_hot = ""
+        for i in range(len(a)):
+            if a[i] == b[i]:
+                one_hot += "0"
+                continue
+            else:
+                one_hot += "1"
+                mut = f"{a[i]}{i + mut_start_pos}{b[i]}"
+                muts.append(mut)
+        one_hots.append(one_hot)
+        mutations.append(muts)
+
+    newdf["1hot"] = one_hots
+    newdf["Mutations"] = mutations
+    newdf = newdf.drop(columns=["Sequence", "KD"])
+
+    return newdf
