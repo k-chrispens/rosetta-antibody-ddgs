@@ -1,0 +1,18 @@
+CLUSTAL O(1.2.4) multiple sequence alignment
+
+
+somatic       QVQLVQSGAEVKKPGSSVKVSCKSSGGTSNNYAISWVRQAPGQGLDWMGGISPIFGSTAY	60
+germline      QVQLVQSGAEVKKPGSSVKVSCKASGGTFSSYAISWVRQAPGQGLEWMGGIIPIFGTANY	60
+              ***********************:**** ..**************:***** ****:: *
+
+somatic       AQKFQGRVTISADIFSNTAYMELNSLTSEDTAVYFCARHGNYYYYSGMDVWGQGTTVTVS	120
+germline      AQKFQGRVTITADKSTSTAYMELSSLRSEDTAVYYCARHGNYYYYYGMDVWGQGTTVTVS	120
+              **********:**  :.******.** *******:********** **************
+
+somatic       SASTKGPSVFPLAPSSKSTSGGTAALGCLVKDYFPEPVTVSWNSGALTSGVHTFPAVLQS	180
+germline      S-----------------------------------------------------------	121
+              *                                                           
+
+somatic       SGLYSLSSVVTVPSSSLGTQTYICNVNHKPSNTKVDKRVEPKSC	224
+germline      --------------------------------------------	121
+                                                          
