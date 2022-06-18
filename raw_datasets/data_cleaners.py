@@ -13,7 +13,28 @@ import re
 def ab_bind_clean(file_df):
     """Cleaning and filtering for the AB-Bind database. 
     Filter out homology modeled PDBs, as well as unneeded data 
-    (e.g. Rfree, pH, temperature). FIXME"""
+    (e.g. Rfree, pH, temperature)."""
+    ab_bind = file_df.copy(True)
+    ab_bind = ab_bind.rename(columns={"PDB DOI": "Source"})
+
+    # Remove homology modeled structures and structures with no heavy and light chain label
+    homology = r"HM.+"
+    notHL = r"[^HL]:"
+    abcd = r"AB_CD" # to keep the one entry of two antibodies binding together
+    to_keep = ab_bind["Partners(A_B)"].str.contains(abcd)
+    keep = ab_bind[to_keep]
+    to_remove = ab_bind['#PDB'].str.contains(homology)
+    ab_bind = ab_bind[~to_remove]
+    to_remove = ab_bind['Mutation'].str.contains(notHL)
+    ab_bind = ab_bind[~to_remove]
+    ab_bind = pd.concat([ab_bind, keep])
+
+    ab_bind["Mutation"] = ab_bind["Mutation"].apply(
+        lambda x: re.sub(r",", ";", x))
+
+    ab_bind["LD"] = ab_bind["Mutation"].apply(lambda x: x.count(";") + 1)
+
+    return ab_bind
 
 
 def skempi_clean(file_df):
@@ -29,23 +50,23 @@ def sipdab_clean(file_df):
 def ddg_from_kd(kd, temp, reference_kd):
     """Returns affinity ddG value from disassociation constant 
     using dG = RTlnK_d and a reference K_d."""
-    return 8.31446261815324 / (4184) * temp * (math.log(reference_kd) - math.log(kd))
+    return 8.31446261815324 / (4184) * temp * (np.log(kd) - np.log(reference_kd))
 
 
 def phillips_clean(df: pd.DataFrame, cr9114: bool):
     """Filtering and calculations to fit the parsed Phillips et al. data 
     to the remainder of the data from other sources. 
-    From PDB, T = 295K for CR6261, 293K for CR9114."""
+    From PDB, T = 295K for CR6261, 293K for CR9114, but using body temp 310K 
+    FIXME: Currently not sure what units are going in for ddG"""
     mut_df = df.copy(True)
     index = mut_df.index[mut_df['Mutations'].apply(
         len) == 16] if cr9114 else mut_df.index[mut_df['Mutations'].apply(len) == 11]
 
-    reference = mut_df.iloc[index]["logKD"]
-    mut_df["logKD"] = mut_df["logKD"].apply(
-        lambda x: - ddg_from_kd(math.exp(x), 293, reference)) if cr9114 else mut_df["logKD"].apply(
-        lambda x: - ddg_from_kd(math.exp(x), 295, reference))
+    reference = mut_df.iloc[index]["-logKD"]
+    mut_df["-logKD"] = mut_df["-logKD"].apply(
+        lambda x: ddg_from_kd(math.pow(10, -x), 310, math.pow(10, -reference)))
 
-    mut_df.rename(columns={"logKD": "ddG"}, inplace=True)
+    mut_df.rename(columns={"-logKD": "ddG"}, inplace=True)
     return mut_df
 
 
@@ -81,7 +102,7 @@ def return_mut_df(file_df, cr9114: bool):
         "#PDB": pdb_id,
         "1hot": file_df['variant'],
         "Mutations": var_mutations,
-        "logKD": log_kd,
+        "-logKD": log_kd,
         "LD": num_mutations
     })
     # df of mutations and logKDs
