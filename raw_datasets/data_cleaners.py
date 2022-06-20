@@ -1,6 +1,6 @@
 """
 Functions for formatting and analyzing raw_datasets using pandas.
-
+Author: Karson Chrispens
 Used in the ab_proj virtual env.
 """
 
@@ -84,8 +84,7 @@ def ddg_from_kd(kd, temp, reference_kd):
 def phillips_clean(df: pd.DataFrame, cr9114: bool):
     """Filtering and calculations to fit the parsed Phillips et al. data 
     to the remainder of the data from other sources. 
-    From PDB, T = 295K for CR6261, 293K for CR9114, but using body temp 310K 
-    FIXME: Currently not sure what units are going in for ddG"""
+    From PDB, T = 295K for CR6261, 293K for CR9114, but using body temp 310K."""
     mut_df = df.copy(True)
     index = mut_df.index[mut_df['Mutations'].apply(
         len) == 16] if cr9114 else mut_df.index[mut_df['Mutations'].apply(len) == 11]
