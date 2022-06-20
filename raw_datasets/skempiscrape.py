@@ -13,8 +13,8 @@ def skempi_clean_test(file_df):
     # prot2 = skempi["Protein 2"].str.contains(
     #     "fab|mab", case=False) | skempi["Protein 2"].str.contains("antibody|Fv", case=False)
     undef = r"[><~nb]"
-    undef_mut_affinity = skempi["Affinity Mut"].str.contains(undef)
-    undef_wt_affinity = skempi["Affinity Wt"].str.contains(undef)
+    undef_mut_affinity = skempi["Affinity Mut"].astype(str).str.contains(undef)
+    undef_wt_affinity = skempi["Affinity Wt"].astype(str).str.contains(undef)
     undef_affinity = undef_mut_affinity | undef_wt_affinity
 
     skempi = skempi[~undef_affinity]
@@ -41,9 +41,8 @@ dfs = []
 for page in range(1, 22):
     url = fr"https://life.bsc.es/pid/skempi2/database/browse/mutations?keywords=mutations.protein_1+contains+%22fab%22+or+mutations.protein_1+contains+%22fv%22+or+mutations.protein_2+contains+%22fv%22+or+mutations.protein_1+contains+%22mab%22+or+mutations.protein_2+contains+%22mab%22+or+mutations.protein_1+contains+%22antibody%22+or+mutations.protein_2+contains+%22antibody%22+or+mutations.protein_2+contains+%22fab%22&page={page}&pagination=50&pdbdb=rcsb"
     dfs.append(pd.read_html(url)[0])
-    # print(pd.read_html(url)[0].head())
 
-print("done appending")
+print("Done appending.")
 
 concatdfs = []
 
@@ -52,11 +51,11 @@ for df in dfs:
 
 results = pd.concat(concatdfs)
 
-print("done concatenating")
+print("Done concatenating.")
 
 try:
     results.to_csv('skempi_scraped.csv')
-    print("wrote file")
+    print("Wrote file.")
 except:
-    print("Did not output")
+    print("Did not output.")
 
