@@ -39,12 +39,32 @@ def ab_bind_clean(file_df):
 
 def skempi_clean(file_df):
     """Cleaning and filtering for SKEMPI 2.0 database.
-    Filter to include only relevant information: e.g. FIXME."""
+    Filter to include only relevant information."""
+
+    skempi = file_df.copy(True)
+
+    skempi["#Pdb"] = skempi["#Pdb"].apply(
+        lambda x: re.sub(r"(\w{4}).*", r"\1", x))
+    skempi["Mutation(s)_PDB"] = skempi["Mutation(s)_PDB"].apply(
+        lambda x: re.sub(r"(\w)(\w)(\w+)", r"\2:\1\3", re.sub(r",", r";", x)))
+    prot1 = skempi["Protein 1"].str.contains(
+        "fab|mab", case=False) | skempi["Protein 1"].str.contains("antibody|Fv", case=False)
+    prot2 = skempi["Protein 2"].str.contains(
+        "fab|mab", case=False) | skempi["Protein 2"].str.contains("antibody|Fv", case=False)
+
+    abs = prot1 | prot2
+    skempi = skempi[abs]
+
+    skempi = skempi.assign(ddG=lambda x: ddg_from_kd(
+        x["Affinity_mut_parsed"], x["Temperature"], x["Affinity_wt_parsed"]))
+    skempi.rename(columns={"ddG": "ddG(kcal/mol)"}, inplace=True)
+
+    return skempi
 
 
 def sipdab_clean(file_df):
     """Cleaning and filtering for SiPDAB database.
-    Filter to include only relevant information: e.g. FIXME."""
+    Filter to include only relevant information: e.g. LD, PDB, onehot encoding, mutations, ddG."""
 
 
 def ddg_from_kd(kd, temp, reference_kd):
@@ -150,3 +170,14 @@ def mason_etal_clean(filedf: pd.DataFrame):
     newdf = newdf.drop(columns=["Sequence", "KD"])
 
     return newdf
+
+def kiyoshi_clean(filedf: pd.DataFrame):
+    """Cleaning and filtering for Kiyoshi et al. data.
+    Filter to include only relevant information: e.g. LD, PDB, onehot encoding, mutations, ddG."""
+    kiyoshi_etal = filedf.copy(True)
+    kiyoshi_etal.drop(axis=1, index=0, inplace=True)
+
+    kiyoshi_etal["Mutation"] = kiyoshi_etal["Mutation"].apply(
+        lambda x: dc.re.sub(r"(\w)-(\w+)", r"\1:\2", x))
+
+    return kiyoshi_etal
