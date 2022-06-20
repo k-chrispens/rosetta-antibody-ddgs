@@ -8,11 +8,8 @@ def skempi_clean_test(file_df):
     Filter to include only relevant information. NOTE: Using 310K as temperature for all ddG calculations."""
 
     skempi = file_df.copy(True)
-    # prot1 = skempi["Protein 1"].str.contains(
-    #     "fab|mab", case=False) | skempi["Protein 1"].str.contains("antibody|Fv", case=False)
-    # prot2 = skempi["Protein 2"].str.contains(
-    #     "fab|mab", case=False) | skempi["Protein 2"].str.contains("antibody|Fv", case=False)
-    undef = r"[><~nb]"
+
+    undef = r"[><~nb]"  # filter out undefined entries
     undef_mut_affinity = skempi["Affinity Mut"].astype(str).str.contains(undef)
     undef_wt_affinity = skempi["Affinity Wt"].astype(str).str.contains(undef)
     undef_affinity = undef_mut_affinity | undef_wt_affinity
@@ -26,8 +23,9 @@ def skempi_clean_test(file_df):
 
     skempi["LD"] = skempi["Mutation Pdb"].apply(
         lambda x: x.count(";") + 1)
-    # abs = prot1 | prot2
-    # skempi = skempi[abs]
+
+    skempi["Affinity Mut"] = skempi["Affinity Mut"].astype(float)
+    skempi["Affinity Wt"] = skempi["Affinity Wt"].astype(float)
 
     skempi = skempi.assign(ddG=lambda x: dc.ddg_from_kd(
         x["Affinity Mut"], 310, x["Affinity Wt"]))
@@ -58,4 +56,3 @@ try:
     print("Wrote file.")
 except:
     print("Did not output.")
-
