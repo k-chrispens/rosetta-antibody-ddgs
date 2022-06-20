@@ -24,7 +24,7 @@ def skempi_clean_test(file_df):
     skempi["Mutation Pdb"] = skempi["Mutation Pdb"].apply(
         lambda x: re.sub(r"(\w)(\w)(\w+)", r"\2:\1\3", re.sub(r",", r";", x)))
 
-    skempi["LD"] = skempi["Mutation(s)_PDB"].apply(
+    skempi["LD"] = skempi["Mutation Pdb"].apply(
         lambda x: x.count(";") + 1)
     # abs = prot1 | prot2
     # skempi = skempi[abs]
