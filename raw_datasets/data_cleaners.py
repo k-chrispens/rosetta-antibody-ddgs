@@ -5,6 +5,7 @@ Used in the ab_proj virtual env.
 """
 
 import math
+from tokenize import String
 import numpy as np
 import pandas as pd
 import re
@@ -20,7 +21,7 @@ def ab_bind_clean(file_df):
     # Remove homology modeled structures and structures with no heavy and light chain label
     homology = r"HM.+"
     notHL = r"[^HL]:"
-    abcd = r"AB_CD" # to keep the one entry of two antibodies binding together
+    abcd = r"AB_CD"  # to keep the one entry of two antibodies binding together
     to_keep = ab_bind["Partners(A_B)"].str.contains(abcd)
     keep = ab_bind[to_keep]
     to_remove = ab_bind['#PDB'].str.contains(homology)
@@ -39,7 +40,7 @@ def ab_bind_clean(file_df):
 
 def skempi_clean(file_df):
     """Cleaning and filtering for SKEMPI 2.0 database.
-    Filter to include only relevant information."""
+    Filter to include only relevant information. NOTE: Using 310K as temperature for all ddG calculations."""
 
     skempi = file_df.copy(True)
 
@@ -52,19 +53,26 @@ def skempi_clean(file_df):
     prot2 = skempi["Protein 2"].str.contains(
         "fab|mab", case=False) | skempi["Protein 2"].str.contains("antibody|Fv", case=False)
 
+    skempi["LD"] = skempi["Mutation(s)_PDB"].apply(
+        lambda x: x.count(";") + 1)
     abs = prot1 | prot2
     skempi = skempi[abs]
 
     skempi = skempi.assign(ddG=lambda x: ddg_from_kd(
-        x["Affinity_mut_parsed"], x["Temperature"], x["Affinity_wt_parsed"]))
-    skempi.rename(columns={"ddG": "ddG(kcal/mol)"}, inplace=True)
+        x["Affinity_mut_parsed"], 310, x["Affinity_wt_parsed"]))
+    skempi.rename(columns={"ddG": "ddG(kcal/mol)", "#Pdb": "#PDB"}, inplace=True)
 
     return skempi
 
 
-def sipdab_clean(file_df):
-    """Cleaning and filtering for SiPDAB database.
+def sipmab_clean(file_df):
+    """Cleaning and filtering for SiPMAB database.
     Filter to include only relevant information: e.g. LD, PDB, onehot encoding, mutations, ddG."""
+    sipmab = file_df.copy(True)
+    sipmab["Mutation"] = sipmab["Mutation"].apply(
+        lambda x: re.sub(r"(\w)(\w+)", r"\1:\2", convert_3to1(x)))
+    sipmab["LD"] = 1
+    return sipmab
 
 
 def ddg_from_kd(kd, temp, reference_kd):
@@ -129,9 +137,22 @@ def return_mut_df(file_df, cr9114: bool):
     return new_df
 
 
-def filter_overlap_and_combine(df1, df2):
+def filter_overlap_and_combine(df1: pd.DataFrame, df2: pd.DataFrame):
     """Removes overlapping entries from two dataframes and 
-    returns a combined dataset given that the two are combineable FIXME"""
+    returns a combined dataframe given that the two are combineable.
+    NOTE: Prefers entries in df1 over df2 when overlap occurs. 
+    The column with PDB IDs must be called \"#PDB\"."""
+    df1_unique = df1["#PDB"].unique()
+    df2_unique = df2["#PDB"].unique()
+
+    new_df = df1
+
+    for i in df2_unique:
+        if i in df1_unique:
+            continue
+        else:
+            new_df = pd.concat([new_df, df2.loc[df2["#PDB"] == i]])
+    return new_df
 
 
 def mason_etal_clean(filedf: pd.DataFrame):
@@ -171,6 +192,7 @@ def mason_etal_clean(filedf: pd.DataFrame):
 
     return newdf
 
+
 def kiyoshi_clean(filedf: pd.DataFrame):
     """Cleaning and filtering for Kiyoshi et al. data.
     Filter to include only relevant information: e.g. LD, PDB, onehot encoding, mutations, ddG."""
@@ -178,6 +200,19 @@ def kiyoshi_clean(filedf: pd.DataFrame):
     kiyoshi_etal.drop(axis=1, index=0, inplace=True)
 
     kiyoshi_etal["Mutation"] = kiyoshi_etal["Mutation"].apply(
-        lambda x: dc.re.sub(r"(\w)-(\w+)", r"\1:\2", x))
+        lambda x: re.sub(r"(\w)-(\w+)", r"\1:\2", x))
 
     return kiyoshi_etal
+
+
+def convert_3to1(mutation: str):
+    d = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+         'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+         'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+         'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+    for three in d.keys():
+        if three in mutation:
+            mutation = mutation.replace(three, d[three])
+
+    return mutation
