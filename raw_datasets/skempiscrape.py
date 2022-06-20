@@ -41,8 +41,12 @@ dfs = []
 for page in range(1, 22):
     url = fr"https://life.bsc.es/pid/skempi2/database/browse/mutations?keywords=mutations.protein_1+contains+%22fab%22+or+mutations.protein_1+contains+%22fv%22+or+mutations.protein_2+contains+%22fv%22+or+mutations.protein_1+contains+%22mab%22+or+mutations.protein_2+contains+%22mab%22+or+mutations.protein_1+contains+%22antibody%22+or+mutations.protein_2+contains+%22antibody%22+or+mutations.protein_2+contains+%22fab%22&page={page}&pagination=50&pdbdb=rcsb"
     dfs.append(pd.read_html(url)[0])
+    print("appended 1")
 
-concatdfs = [ skempi_clean_test(df) for df in dfs ]
+concatdfs = [ skempi_clean_test(df[0]) for df in dfs ]
 results = pd.concat(concatdfs)
 
-results.to_csv('skempi_scraped.csv')
+try:
+    results.to_csv('skempi_scraped.csv')
+except:
+    print("Did not output")
