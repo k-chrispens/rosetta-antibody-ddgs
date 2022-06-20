@@ -3,7 +3,7 @@ import re
 import data_cleaners as dc
 
 
-def skempi_clean_test(file_df):
+def skempi_clean_scrape(file_df):
     """Cleaning and filtering for SKEMPI 2.0 database.
     Filter to include only relevant information. NOTE: Using 310K as temperature for all ddG calculations."""
 
@@ -45,7 +45,7 @@ print("Done appending.")
 concatdfs = []
 
 for df in dfs:
-    concatdfs.append(skempi_clean_test(df))
+    concatdfs.append(skempi_clean_scrape(df))
 
 results = pd.concat(concatdfs)
 

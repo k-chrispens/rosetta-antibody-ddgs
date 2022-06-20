@@ -38,29 +38,12 @@ def ab_bind_clean(file_df):
     return ab_bind
 
 
-def skempi_clean(file_df):
-    """Cleaning and filtering for SKEMPI 2.0 database.
-    Filter to include only relevant information. NOTE: Using 310K as temperature for all ddG calculations."""
+def skempi_rename(file_df):
+    """Renaming a few things to be consistent with other dataframes"""
 
     skempi = file_df.copy(True)
 
-    skempi["#Pdb"] = skempi["#Pdb"].apply(
-        lambda x: re.sub(r"(\w{4}).*", r"\1", x))
-    skempi["Mutation(s)_PDB"] = skempi["Mutation(s)_PDB"].apply(
-        lambda x: re.sub(r"(\w)(\w)(\w+)", r"\2:\1\3", re.sub(r",", r";", x)))
-    prot1 = skempi["Protein 1"].str.contains(
-        "fab|mab", case=False) | skempi["Protein 1"].str.contains("antibody|Fv", case=False)
-    prot2 = skempi["Protein 2"].str.contains(
-        "fab|mab", case=False) | skempi["Protein 2"].str.contains("antibody|Fv", case=False)
-
-    skempi["LD"] = skempi["Mutation(s)_PDB"].apply(
-        lambda x: x.count(";") + 1)
-    abs = prot1 | prot2
-    skempi = skempi[abs]
-
-    skempi = skempi.assign(ddG=lambda x: ddg_from_kd(
-        x["Affinity_mut_parsed"], 310, x["Affinity_wt_parsed"]))
-    skempi.rename(columns={"ddG": "ddG(kcal/mol)", "#Pdb": "#PDB"}, inplace=True)
+        
 
     return skempi
 
