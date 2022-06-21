@@ -34,16 +34,17 @@ def ab_bind_clean(file_df):
         lambda x: re.sub(r",", ";", x))
 
     ab_bind["LD"] = ab_bind["Mutation"].apply(lambda x: x.count(";") + 1)
+    ab_bind.rename(columns={"Mutation": "Mutations"})
 
     return ab_bind
 
 
-def skempi_rename(file_df):
+def skempi_rename(file_df: pd.DataFrame):
     """Renaming a few things to be consistent with other dataframes"""
 
     skempi = file_df.copy(True)
 
-        
+    skempi.rename(columns={"Mutation Pdb": "Mutations"})
 
     return skempi
 
@@ -55,6 +56,8 @@ def sipmab_clean(file_df):
     sipmab["Mutation"] = sipmab["Mutation"].apply(
         lambda x: re.sub(r"(\w)(\w+)", r"\1:\2", convert_3to1(x)))
     sipmab["LD"] = 1
+    sipmab.rename(columns={"Mutation": "Mutations"})
+
     return sipmab
 
 
@@ -69,14 +72,15 @@ def phillips_clean(df: pd.DataFrame, cr9114: bool):
     to the remainder of the data from other sources. 
     From PDB, T = 295K for CR6261, 293K for CR9114, but using body temp 310K."""
     mut_df = df.copy(True)
-    index = mut_df.index[mut_df['Mutations'].apply(
-        len) == 16] if cr9114 else mut_df.index[mut_df['Mutations'].apply(len) == 11]
-
-    reference = mut_df.iloc[index]["-logKD"]
+    print(mut_df[mut_df["LD"] == 16]) # FIXME
+    index = mut_df.index[mut_df["LD"] ==
+                         16] if cr9114 else mut_df.index[mut_df['LD'] == 11]
+    print(index) # FIXME
+    reference = mut_df["-logKD"].iloc[index]
     mut_df["-logKD"] = mut_df["-logKD"].apply(
         lambda x: ddg_from_kd(math.pow(10, -x), 310, math.pow(10, -reference)))
 
-    mut_df.rename(columns={"-logKD": "ddG"}, inplace=True)
+    mut_df.rename(columns={"-logKD": "ddG(kcal/mol)"}, inplace=True)
     return mut_df
 
 
@@ -96,25 +100,29 @@ def return_mut_df(file_df, cr9114: bool):
     num_mutations = []
 
     for i in range(len(file_df['variant'])):
+        muts = ""
         # To deal with cases where 1hot length is not the same length as the total amount of mutations due to dropping off 0s
         one_hot = list(str(file_df['variant'].at[i]))
         if len(one_hot) != len(mutations):
             to_add = len(mutations) - len(one_hot)
-            one_hot = ['0']*to_add + one_hot
-        num_mutations.append(one_hot.count('1'))
+            one_hot = one_hot + ['0']*to_add
         var_id.append(one_hot)
-        var_mutations.append([mutations[j] for j in range(
-            len(mutations)) if var_id[i][j] == '1'])
+        for j in range(len(mutations)):
+            if var_id[i][j] == '1':
+                muts += f"H:{mutations[j]};"
+        muts = muts[:-1]
+        num_mutations.append(muts.count(';') + 1)
+        var_mutations.append(muts)
 
     log_kd = file_df['logKd']
 
     new_df = pd.DataFrame({
         "#PDB": pdb_id,
-        "1hot": file_df['variant'],
         "Mutations": var_mutations,
         "-logKD": log_kd,
         "LD": num_mutations
     })
+    print(max(num_mutations)) # FIXME
     # df of mutations and logKDs
     return new_df
 
@@ -183,6 +191,7 @@ def kiyoshi_clean(filedf: pd.DataFrame):
 
     kiyoshi_etal["Mutation"] = kiyoshi_etal["Mutation"].apply(
         lambda x: re.sub(r"(\w)-(\w+)", r"\1:\2", x))
+    kiyoshi_etal.rename(columns={"Mutation": "Mutations"})
 
     return kiyoshi_etal
 

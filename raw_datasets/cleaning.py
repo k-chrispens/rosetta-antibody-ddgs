@@ -38,8 +38,8 @@ sipmab = dc.sipmab_clean(sipmab)
 skempi = dc.skempi_rename(skempi)
 mason_etal = dc.mason_etal_clean(mason_etal)
 kiyoshi_etal = dc.kiyoshi_clean(kiyoshi_etal)
-phillips_etal_cr6261 = dc.phillips_clean(
-    dc.return_mut_df(phillips_etal_cr6261, False), False)
-phillips_etal_cr9114 = dc.phillips_clean(
-    dc.return_mut_df(phillips_etal_cr9114, True), True)
+phillips_etal_cr6261 = dc.return_mut_df(phillips_etal_cr6261, False)
+phillips_etal_cr6261 = dc.phillips_clean(phillips_etal_cr6261, False)
+phillips_etal_cr9114 = dc.return_mut_df(phillips_etal_cr9114, True)
+phillips_etal_cr9114 = dc.phillips_clean(phillips_etal_cr9114, True)
 
