@@ -1,6 +1,6 @@
 """
 Script for formatting and analyzing raw_datasets using pandas.
-
+Author: Karson Chrispens
 Used in the ab_proj virtual env. Requires functions from data_cleaners.py
 """
 
@@ -36,10 +36,23 @@ phillips_etal_cr9114 = dc.pd.read_csv(
 ab_bind = dc.ab_bind_clean(ab_bind)
 sipmab = dc.sipmab_clean(sipmab)
 skempi = dc.skempi_rename(skempi)
-mason_etal = dc.mason_etal_clean(mason_etal)
-kiyoshi_etal = dc.kiyoshi_clean(kiyoshi_etal)
+mason_etal = dc.mason_etal_clean(mason_etal) # This overlaps, will need to do simple concat.
+kiyoshi_etal = dc.kiyoshi_clean(kiyoshi_etal) # Already in SKEMPI 2.0, unfortunately.
 phillips_etal_cr6261 = dc.return_mut_df(phillips_etal_cr6261, False)
 phillips_etal_cr6261 = dc.phillips_clean(phillips_etal_cr6261, False)
 phillips_etal_cr9114 = dc.return_mut_df(phillips_etal_cr9114, True)
 phillips_etal_cr9114 = dc.phillips_clean(phillips_etal_cr9114, True)
 
+ab_bind_skempi = dc.filter_overlap_and_combine(ab_bind, skempi)
+ab_bind_skempi_sipmab = dc.filter_overlap_and_combine(ab_bind_skempi, sipmab)
+ab_bind_skempi_sipmab_mason = dc.pd.concat([ab_bind_skempi_sipmab, mason_etal], join='inner')
+ab_bind_skempi_sipmab_mason_phillips = dc.filter_overlap_and_combine(
+    ab_bind_skempi_sipmab_mason, phillips_etal_cr6261.sample(100, random_state=12))
+all = dc.filter_overlap_and_combine(
+    ab_bind_skempi_sipmab_mason_phillips, phillips_etal_cr9114.sample(100, random_state=14))
+
+try:
+    all.to_csv('full_data.csv')
+    print("Wrote file.")
+except:
+    print("Did not output.")

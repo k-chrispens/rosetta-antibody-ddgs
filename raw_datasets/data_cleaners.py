@@ -34,7 +34,8 @@ def ab_bind_clean(file_df):
         lambda x: re.sub(r",", ";", x))
 
     ab_bind["LD"] = ab_bind["Mutation"].apply(lambda x: x.count(";") + 1)
-    ab_bind.rename(columns={"Mutation": "Mutations"})
+    ab_bind.rename(columns={"Mutation": "Mutations"}, inplace=True)
+    ab_bind["Source"] = "AB-Bind"  # Naming source for final dataset
 
     return ab_bind
 
@@ -44,7 +45,8 @@ def skempi_rename(file_df: pd.DataFrame):
 
     skempi = file_df.copy(True)
 
-    skempi.rename(columns={"Mutation Pdb": "Mutations"})
+    skempi.rename(columns={"Mutation Pdb": "Mutations"}, inplace=True)
+    skempi["Source"] = "SKEMPI 2.0"  # Naming source for final dataset
 
     return skempi
 
@@ -56,7 +58,8 @@ def sipmab_clean(file_df):
     sipmab["Mutation"] = sipmab["Mutation"].apply(
         lambda x: re.sub(r"(\w)(\w+)", r"\1:\2", convert_3to1(x)))
     sipmab["LD"] = 1
-    sipmab.rename(columns={"Mutation": "Mutations"})
+    sipmab.rename(columns={"Mutation": "Mutations"}, inplace=True)
+    sipmab["Source"] = "SiPMAB"  # Naming source for final dataset
 
     return sipmab
 
@@ -72,6 +75,8 @@ def phillips_clean(df: pd.DataFrame, cr9114: bool):
     to the remainder of the data from other sources. 
     From PDB, T = 295K for CR6261, 293K for CR9114, but using body temp 310K."""
     mut_df = df.copy(True)
+    mut_df = mut_df[mut_df['-logKD'] != 5]
+    mut_df = mut_df[~mut_df['-logKD'].isnull()]
     index = mut_df.index[mut_df["LD"] ==
                          16] if cr9114 else mut_df.index[mut_df['LD'] == 11]
     reference = mut_df["-logKD"].iloc[index]
@@ -79,6 +84,7 @@ def phillips_clean(df: pd.DataFrame, cr9114: bool):
         lambda x: ddg_from_kd(math.pow(10, -x), 310, math.pow(10, -reference)))
 
     mut_df.rename(columns={"-logKD": "ddG(kcal/mol)"}, inplace=True)
+    mut_df["Source"] = "Phillips et al. 2021"
     return mut_df
 
 
@@ -138,7 +144,7 @@ def filter_overlap_and_combine(df1: pd.DataFrame, df2: pd.DataFrame):
         if i in df1_unique:
             continue
         else:
-            new_df = pd.concat([new_df, df2.loc[df2["#PDB"] == i]])
+            new_df = pd.concat([new_df, df2.loc[df2["#PDB"] == i]], join="inner")
     return new_df
 
 
@@ -160,23 +166,30 @@ def mason_etal_clean(filedf: pd.DataFrame):
         cases.append((compare_to, seq))
 
     for a, b in cases:
-        muts = []
+        muts = ""
         one_hot = ""
+        lds = []
+        ld = 0
         for i in range(len(a)):
             if a[i] == b[i]:
                 one_hot += "0"
                 continue
             else:
+                ld += 1
                 one_hot += "1"
-                mut = f"{a[i]}{i + mut_start_pos}{b[i]}"
-                muts.append(mut)
+                mut = f"B:{a[i]}{i + mut_start_pos}{b[i]};"
+                muts = muts + mut
+        muts = muts[:-1]
+        lds.append(ld)
         one_hots.append(one_hot)
         mutations.append(muts)
 
     newdf["1hot"] = one_hots
     newdf["Mutations"] = mutations
     newdf = newdf.drop(columns=["Sequence", "KD"])
+    newdf["Source"] = "Mason et al. 2021"
 
+    newdf = newdf[newdf['1hot'] != "000000000000000"]
     return newdf
 
 
@@ -188,7 +201,8 @@ def kiyoshi_clean(filedf: pd.DataFrame):
 
     kiyoshi_etal["Mutation"] = kiyoshi_etal["Mutation"].apply(
         lambda x: re.sub(r"(\w)-(\w+)", r"\1:\2", x))
-    kiyoshi_etal.rename(columns={"Mutation": "Mutations"})
+    kiyoshi_etal.rename(columns={"Mutation": "Mutations"}, inplace = True)
+    kiyoshi_etal["Source"] = "Kiyoshi et al. 2014"
 
     return kiyoshi_etal
 
