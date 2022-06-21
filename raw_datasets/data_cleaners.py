@@ -72,10 +72,8 @@ def phillips_clean(df: pd.DataFrame, cr9114: bool):
     to the remainder of the data from other sources. 
     From PDB, T = 295K for CR6261, 293K for CR9114, but using body temp 310K."""
     mut_df = df.copy(True)
-    print(mut_df[mut_df["LD"] == 16]) # FIXME
     index = mut_df.index[mut_df["LD"] ==
                          16] if cr9114 else mut_df.index[mut_df['LD'] == 11]
-    print(index) # FIXME
     reference = mut_df["-logKD"].iloc[index]
     mut_df["-logKD"] = mut_df["-logKD"].apply(
         lambda x: ddg_from_kd(math.pow(10, -x), 310, math.pow(10, -reference)))
@@ -122,7 +120,6 @@ def return_mut_df(file_df, cr9114: bool):
         "-logKD": log_kd,
         "LD": num_mutations
     })
-    print(max(num_mutations)) # FIXME
     # df of mutations and logKDs
     return new_df
 
