@@ -99,7 +99,6 @@ def return_mut_df(file_df, cr9114: bool):
         mutations = ['P28T', 'R30S', 'T58A', 'K59N', 'P62Q',
                      'D74E', 'F75S', 'A76T', 'G77S', 'V79A', 'V104L']
         pdb_id = "3BGN"
-    var_id = []
     var_mutations = []
     num_mutations = []
 
@@ -109,11 +108,10 @@ def return_mut_df(file_df, cr9114: bool):
         one_hot = list(str(file_df['variant'].at[i]))
         if len(one_hot) != len(mutations):
             to_add = len(mutations) - len(one_hot)
-            one_hot = one_hot + ['0']*to_add
-        var_id.append(one_hot)
-        for j in range(len(mutations)):
+            one_hot = ['0']*to_add + one_hot
+        for j in range(len(one_hot)):
             # Germline in dataset is all 0, we want that to be the full mutant
-            if var_id[i][j] == '0':
+            if one_hot[j] == '0':
                 muts += f"H:{mutations[j]};"
         muts = muts[:-1]
         if len(muts) == 0:
