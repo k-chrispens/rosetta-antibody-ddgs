@@ -47,9 +47,9 @@ ab_bind_skempi = dc.filter_overlap_and_combine(ab_bind, skempi)
 ab_bind_skempi_sipmab = dc.filter_overlap_and_combine(ab_bind_skempi, sipmab)
 ab_bind_skempi_sipmab_mason = dc.pd.concat([ab_bind_skempi_sipmab, mason_etal], join='inner')
 ab_bind_skempi_sipmab_mason_phillips = dc.filter_overlap_and_combine(
-    ab_bind_skempi_sipmab_mason, phillips_etal_cr6261.sample(100, random_state=12))
+    ab_bind_skempi_sipmab_mason, phillips_etal_cr6261)
 all = dc.filter_overlap_and_combine(
-    ab_bind_skempi_sipmab_mason_phillips, phillips_etal_cr9114.sample(100, random_state=14))
+    ab_bind_skempi_sipmab_mason_phillips, phillips_etal_cr9114)
 
 try:
     all.to_csv('full_data.csv')

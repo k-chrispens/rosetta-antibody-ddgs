@@ -77,8 +77,7 @@ def phillips_clean(df: pd.DataFrame, cr9114: bool):
     mut_df = df.copy(True)
     mut_df = mut_df[mut_df['-logKD'] != 5]
     mut_df = mut_df[~mut_df['-logKD'].isnull()]
-    index = mut_df.index[mut_df["LD"] ==
-                         16] if cr9114 else mut_df.index[mut_df['LD'] == 11]
+    index = mut_df.index[mut_df["LD"] == 0] # Switched mutations from germline to mutant to mutant to germline due to pdb
     reference = mut_df["-logKD"].iloc[index]
     mut_df["-logKD"] = mut_df["-logKD"].apply(
         lambda x: ddg_from_kd(math.pow(10, -x), 310, math.pow(10, -reference)))
@@ -91,13 +90,14 @@ def phillips_clean(df: pd.DataFrame, cr9114: bool):
 def return_mut_df(file_df, cr9114: bool):
     """Function adapted from Brian Petersen to parse the 1hot data 
     from Phillips et al. to a list of mutations. Set cr9114 bool if working with CR9114 instead of CR6261."""
+    # Mutations are from PDB to germline
     if cr9114:
-        mutations = ['F29S', 'S30N', 'S31N', 'I52S', 'T57S', 'A58T', 'N59A',
-                     'T71S', 'K74I', 'S75F', 'T76S', 'S77N', 'S84N', 'R87T', 'Y95F', 'Y106S']
+        mutations = ['S29F', 'N30S', 'N31S', 'S52I', 'S57T', 'T58A', 'A59N',
+                     'S71T', 'I74K', 'F75S', 'S76T', 'N77S', 'N84S', 'T87R', 'F95Y', 'S106Y']
         pdb_id = "4FQY"
     else:
-        mutations = ['T28P', 'S30R', 'A58T', 'N59K', 'Q62P',
-                     'E74D', 'S75F', 'T76A', 'S77G', 'A79V', 'L104V']
+        mutations = ['P28T', 'R30S', 'T58A', 'K59N', 'P62Q',
+                     'D74E', 'F75S', 'A76T', 'G77S', 'V79A', 'V104L']
         pdb_id = "3BGN"
     var_id = []
     var_mutations = []
@@ -112,10 +112,14 @@ def return_mut_df(file_df, cr9114: bool):
             one_hot = one_hot + ['0']*to_add
         var_id.append(one_hot)
         for j in range(len(mutations)):
-            if var_id[i][j] == '1':
+            # Germline in dataset is all 0, we want that to be the full mutant
+            if var_id[i][j] == '0':
                 muts += f"H:{mutations[j]};"
         muts = muts[:-1]
-        num_mutations.append(muts.count(';') + 1)
+        if len(muts) == 0:
+            num_mutations.append(0)
+        else:
+            num_mutations.append(muts.count(';') + 1)
         var_mutations.append(muts)
 
     log_kd = file_df['logKd']
