@@ -4,3 +4,4 @@
 ~*
 *.sh
 *.out
+*.ipynb_checkpoints
