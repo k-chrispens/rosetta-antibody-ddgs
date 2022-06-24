@@ -98,7 +98,7 @@ def return_mut_df(file_df, cr9114: bool):
     else:
         mutations = ['P28T', 'R30S', 'T58A', 'K59N', 'P62Q',
                      'D74E', 'F75S', 'A76T', 'G77S', 'V79A', 'V104L']
-        pdb_id = "3BGN"
+        pdb_id = "3GBN"
     var_mutations = []
     num_mutations = []
 

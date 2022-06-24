@@ -25,7 +25,7 @@ for pdb in averages["#PDB"]:
 
 averages["Average LD"] = averages_list
 barplt = sns.barplot(x="Average LD", y="#PDB", data = averages)
-plt.savefig("average_LD_per_PDB.png")
+plt.savefig("./images/average_LD_per_PDB.png")
 plt.clf()
 
 ### Average LD per source
@@ -40,7 +40,7 @@ for source in averages["Source"]:
 
 averages["Average LD"] = averages_list
 barplt = sns.barplot(x="Source", y="Average LD", data=averages)
-plt.savefig("average_LD_per_source.png")
+plt.savefig("./images/average_LD_per_source.png")
 plt.clf()
 
 
@@ -62,7 +62,7 @@ for aa in aas:
 
 data_muts_to_aa = pd.DataFrame(data = {"Amino Acids": aas, "Mutations to Amino Acid": muts_to_aa})
 sns.barplot(x = "Amino Acids", y = "Mutations to Amino Acid", data = data_muts_to_aa)
-plt.savefig("mutations_per_aa.png")
+plt.savefig("./images/mutations_per_aa.png")
 plt.clf()
 
 ### Plotting mutations per PDB
@@ -77,12 +77,12 @@ for pdb in mut_pdbs["#PDB"]:
 
 mut_pdbs["Number of Mutations"] = mut_pdbs_list
 barplt = sns.barplot(x="Number of Mutations", y="#PDB", data = mut_pdbs)
-plt.savefig("mutations_per_PDB.png")
+plt.savefig("./images/mutations_per_PDB.png")
 plt.clf()
 
 ### Mutations per PDB without Phillips
 
 mut_pdbs = mut_pdbs[~(mut_pdbs["#PDB"].str.contains("3BGN") | mut_pdbs["#PDB"].str.contains("4FQY"))]
 barplt = sns.barplot(x="Number of Mutations", y="#PDB", data=mut_pdbs)
-plt.savefig("mutations_per_PDB_no_phillips.png")
+plt.savefig("./images/mutations_per_PDB_no_phillips.png")
 plt.clf()
