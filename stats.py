@@ -10,8 +10,7 @@ import re
 
 sns.set_context("notebook", font_scale = 0.6)
 
-data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/full_data.csv")
-del data[data.columns[0]]
+data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/use_this_data.csv")
 
 ### Plotting average LD per PDB
 
@@ -82,7 +81,23 @@ plt.clf()
 
 ### Mutations per PDB without Phillips
 
-mut_pdbs = mut_pdbs[~(mut_pdbs["#PDB"].str.contains("3BGN") | mut_pdbs["#PDB"].str.contains("4FQY"))]
+mut_pdbs = mut_pdbs[~(mut_pdbs["#PDB"].str.contains("3GBN") | mut_pdbs["#PDB"].str.contains("4FQY"))]
 barplt = sns.barplot(x="Number of Mutations", y="#PDB", data=mut_pdbs)
 plt.savefig("./images/mutations_per_PDB_no_phillips.png")
+plt.clf()
+
+### Average ddG for interface vs non-interface mutations
+
+data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+non_int = data[data["Interface?"] == False]
+interface = data[data["Interface?"] == True]
+
+non_int_avg = sum(non_int["ddG(kcal/mol)"]) / len(non_int)
+interface_avg = sum(interface["ddG(kcal/mol)"]) / len(interface)
+avgs = pd.DataFrame({
+    "Mutation Position": ["Interface", "Non-Interface"],
+    "Average ddG": [interface_avg, non_int_avg]
+})
+barplt = sns.barplot(x = "Mutation Position", y = "Average ddG", data=avgs)
+plt.savefig("./images/avg_ddG_interfaces.png")
 plt.clf()
