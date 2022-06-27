@@ -52,7 +52,7 @@ all = dc.filter_overlap_and_combine(
     ab_bind_skempi_sipmab_mason_phillips, phillips_etal_cr9114)
 
 try:
-    all.to_csv('./raw_datasets/full_data.csv')
+    all.to_csv('./raw_datasets/full_data.csv', index=False)
     print("Wrote file.")
 except:
     print("Did not output.")

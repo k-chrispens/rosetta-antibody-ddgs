@@ -92,12 +92,12 @@ def return_mut_df(file_df, cr9114: bool):
     from Phillips et al. to a list of mutations. Set cr9114 bool if working with CR9114 instead of CR6261."""
     # Mutations are from PDB to germline
     if cr9114:
-        mutations = ['S29F', 'N30S', 'N31S', 'S52I', 'S57T', 'T58A', 'A59N',
-                     'S71T', 'I74K', 'F75S', 'S76T', 'N77S', 'N84S', 'T87R', 'F95Y', 'S106Y']
+        mutations = ['S29F', 'N30S', 'N31S', 'S52I', 'S56T', 'T57A', 'A58N',
+                     'S70T', 'I73K', 'F74S', 'S75T', 'N76S', 'N82AS', 'T83R', 'F91Y', 'S100BY']
         pdb_id = "4FQY"
     else:
-        mutations = ['P28T', 'R30S', 'T58A', 'K59N', 'P62Q',
-                     'D74E', 'F75S', 'A76T', 'G77S', 'V79A', 'V104L']
+        mutations = ['P28T', 'R30S', 'T57A', 'K58N', 'P61Q',
+                     'D73E', 'F74S', 'A75T', 'G76S', 'V78A', 'V100L']
         pdb_id = "3GBN"
     var_mutations = []
     num_mutations = []

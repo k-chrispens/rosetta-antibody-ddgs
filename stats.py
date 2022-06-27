@@ -101,3 +101,18 @@ avgs = pd.DataFrame({
 barplt = sns.barplot(x = "Mutation Position", y = "Average ddG", data=avgs)
 plt.savefig("./images/avg_ddG_interfaces.png")
 plt.clf()
+
+### ddG histogram for interface vs non-interface
+
+non_int_ddgs = non_int["ddG(kcal/mol)"]
+interface_ddgs = interface["ddG(kcal/mol)"]
+
+df = pd.DataFrame({
+    "Non-Interface": non_int_ddgs,
+    "Interface": interface_ddgs
+})
+
+histplt = sns.histplot(data = df, kde = True, element="step")
+plt.xlabel("ΔΔG (kcal/mol)")
+plt.savefig("./images/ddG_hist_interfaces.png")
+plt.clf()

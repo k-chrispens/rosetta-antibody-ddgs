@@ -146,7 +146,7 @@ data["Interface?"] = interfaces
 print(len(data[data["Interface?"] == True]))
 
 try:
-    data.to_csv('./raw_datasets/interface_data_use.csv')
+    data.to_csv('./raw_datasets/interface_data_use.csv', index=False)
     print("Wrote file.")
 except:
     print("Did not output.")
