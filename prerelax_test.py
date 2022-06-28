@@ -1,6 +1,7 @@
 from pyrosetta.rosetta.core.select.movemap import *
 from rosetta.core.pack.task import TaskFactory
 from rosetta.protocols.relax import FastRelax
+from rosetta.core.scoring import *
 from pyrosetta import *
 import pandas as pd
 init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
