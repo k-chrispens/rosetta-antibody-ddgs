@@ -46,6 +46,8 @@ def skempi_rename(file_df: pd.DataFrame):
     skempi = file_df.copy(True)
 
     skempi.rename(columns={"Mutation Pdb": "Mutations"}, inplace=True)
+    skempi["LD"] = skempi["Mutations"].apply(
+        lambda x: x.count(";") + 1)
     skempi["Source"] = "SKEMPI 2.0"  # Naming source for final dataset
 
     return skempi

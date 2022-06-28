@@ -8,14 +8,17 @@ init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 
 """NOTE ON CONSTRAINTS: going to try overnight testing the relax.constrain_relax_to_start_coords(True),
 but may want to actually loop through and do all the constraints for all the carbon atoms within 9, etc.
-using a residue selector (to generate a .cst file?) then apply the cst file to the pose and score fxn."""
+using a residue selector (to generate a .cst file?) then apply the cst file to the pose and score fxn.
+NOTE: That didn't finish, it didn't even start fast relax. Almost got done with all the rotamers."""
 
-data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-pdbs = data["#PDB"].unique()
-poses = []
-for pdb in pdbs:
-    pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
-    poses.append(pose)
+
+
+# data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+# pdbs = data["#PDB"].unique()
+# poses = []
+# for pdb in pdbs:
+#     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
+#     poses.append(pose)
 
 scorefxn = get_fa_scorefxn()
 fr = FastRelax()

@@ -29,7 +29,7 @@ kiyoshi_etal = dc.pd.read_csv(
 phillips_etal_cr6261 = dc.pd.read_csv(
     "~/rosetta-antibody-ddgs/raw_datasets/phillips_etal_CR6261_H1.csv")
 phillips_etal_cr9114 = dc.pd.read_csv(
-    "~/rosetta-antibody-ddgs/raw_datasets/phillips_etal_CR9114_H3.csv")
+    "~/rosetta-antibody-ddgs/raw_datasets/phillips_etal_CR9114_H3_filt.csv")
 
 # CLEANING
 

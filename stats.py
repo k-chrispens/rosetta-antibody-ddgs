@@ -10,7 +10,7 @@ import re
 
 sns.set_context("notebook", font_scale = 0.6)
 
-data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/use_this_data.csv")
+data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/interface_data_use.csv")
 
 ### Plotting average LD per PDB
 
