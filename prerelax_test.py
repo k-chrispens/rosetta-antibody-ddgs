@@ -1,3 +1,4 @@
+import re
 from pyrosetta.rosetta.core.select.movemap import *
 from rosetta.core.pack.task import TaskFactory
 from rosetta.protocols.relax import FastRelax
@@ -13,12 +14,16 @@ NOTE: That didn't finish, it didn't even start fast relax. Almost got done with 
 
 
 
-# data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-# pdbs = data["#PDB"].unique()
-# poses = []
+data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+pdbs = data["#PDB"].unique()
+# poses = [] # NOTE COMMENTED OUT FOR NOW AS WE MAKE THE GRAPH
 # for pdb in pdbs:
 #     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
 #     poses.append(pose)
+
+pdb = pdbs.sample(n=1, random_state=42)
+
+pose = pose_from_pdb(pdb)
 
 scorefxn = get_fa_scorefxn()
 fr = FastRelax()
@@ -39,8 +44,14 @@ fr.constrain_relax_to_start_coords(True)
 fr.set_task_factory(tf)
 fr.set_movemap_factory(mmf)
 
-for pose in poses:
-    print("Before:", scorefxn(pose))
-    fr.apply(pose)
-    print("After:", scorefxn(pose))
-    pose.dump_pdb(f"{pose.pdb_info().name()}.clean")
+print("Before:", scorefxn(pose))
+fr.apply(pose)
+print("After:", scorefxn(pose))
+name = re.sub(r"(./PDBs/\w{4}).pdb", r"\1_crtsc.pdb", pose.pdb_info().name())
+pose.dump_pdb(name)
+
+# for pose in poses:
+#     print("Before:", scorefxn(pose))
+#     fr.apply(pose)
+#     print("After:", scorefxn(pose))
+#     pose.dump_pdb(f"{pose.pdb_info().name()}.clean")
