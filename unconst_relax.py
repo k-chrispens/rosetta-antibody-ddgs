@@ -1,4 +1,4 @@
-"""Harmonic Prerelax
+"""Unconstrained Prerelax script
 Author: Karson Chrispens"""
 
 from pyrosetta.rosetta.protocols.constraint_generator import *
@@ -21,8 +21,8 @@ for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
     poses.append(pose)
 
-scorefxn = get_fa_scorefxn()
-fr = FastRelax()
+unconst_sfxn = get_fa_scorefxn()
+unconstrained_fr = FastRelax()
 tf = TaskFactory()
 tf.push_back(
     pyrosetta.rosetta.core.pack.task.operation.InitializeFromCommandline())
@@ -34,32 +34,14 @@ mmf = MoveMapFactory()
 mmf.all_bb(True)
 mmf.all_chi(True)
 
-# Harmonic
-apcg = AtomPairConstraintGenerator()
-apcg.set_max_distance(9.0)
-apcg.set_sd(0.5)
-apcg.set_ca_only(True)
-apcg.set_use_harmonic_function(True)
+unconstrained_fr.set_scorefxn(unconst_sfxn)
+unconstrained_fr.set_task_factory(tf)
+unconstrained_fr.set_movemap_factory(mmf)
 
-add_csts = AddConstraints()
-add_csts.add_generator(apcg)
-
-harm_poses = []
 for pose in poses:
-    harm_pose = pose.clone()
-    add_csts.apply(harm_pose)
-    harm_poses.append(harm_pose)
-
-
-scorefxn.set_weight(atom_pair_constraint, 1.0)
-fr.set_scorefxn(scorefxn)
-fr.set_task_factory(tf)
-fr.set_movemap_factory(mmf)
-
-for harm_pose in harm_poses:
-    print("Before:", scorefxn(harm_pose))
-    fr.apply(harm_pose)
-    print("After:", scorefxn(harm_pose))
-    name = re.sub(r"(./PDBs/\w{4}).pdb", r"\1_harm.pdb", harm_pose.pdb_info().name())
-    harm_pose.dump_pdb(name)
-
+    print("Before:", unconst_sfxn(pose))
+    unconstrained_fr.apply(pose)
+    print("After:", unconst_sfxn(pose))
+    name = re.sub(r"(./PDBs/\w{4}).pdb",
+                  r"\1_unconst.pdb", pose.pdb_info().name())
+    pose.dump_pdb(name)

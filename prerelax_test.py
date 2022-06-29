@@ -10,20 +10,22 @@ init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 """NOTE ON CONSTRAINTS: going to try overnight testing the relax.constrain_relax_to_start_coords(True),
 but may want to actually loop through and do all the constraints for all the carbon atoms within 9, etc.
 using a residue selector (to generate a .cst file?) then apply the cst file to the pose and score fxn.
-NOTE: That didn't finish, it didn't even start fast relax. Almost got done with all the rotamers."""
+NOTE: That didn't finish, it didn't even start fast relax. Almost got done with all the rotamers.
+NOTE: Got done with 8 on Blanca over 24 hours."""
 
 
-
-data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-pdbs = data["#PDB"].unique()
+# data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+# pdbs = data["#PDB"].unique()
 # poses = [] # NOTE COMMENTED OUT FOR NOW AS WE MAKE THE GRAPH
 # for pdb in pdbs:
 #     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
 #     poses.append(pose)
 
-pdb = pdbs.sample(n=1, random_state=42)
-
-pose = pose_from_pdb(pdb)
+pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", "3GBN", "4FQY"]
+poses = []
+for pdb in pdbs:
+    pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
+    poses.append(pose)
 
 scorefxn = get_fa_scorefxn()
 fr = FastRelax()
@@ -35,7 +37,7 @@ tf.push_back(pyrosetta.rosetta.core.pack.task.operation.RestrictToRepacking())
 tf.push_back(pyrosetta.rosetta.core.pack.task.operation.NoRepackDisulfides())
 
 mmf = MoveMapFactory()
-mmf.all_bb(False)
+mmf.all_bb(True)
 mmf.all_chi(True)
 
 scorefxn.set_weight(atom_pair_constraint, 1.0)
