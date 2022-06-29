@@ -1,0 +1,594 @@
+/projects/kasp8735/software/anaconda3/bin/python
+core.init: Checking for fconfig files in pwd and ./rosetta/flags 
+core.init: Rosetta version: PyRosetta4.Release.python37.linux r316 2022.14+release.d95c942 d95c9420af12eca758935f7e2b4d05be19e3a5fe http://www.pyrosetta.org 2022-04-07T08:56:27
+core.init: command: PyRosetta -ex1 -ex2 -linmem_ig 10 -database /projects/kasp8735/software/anaconda3/lib/python3.7/site-packages/pyrosetta-2022.14+release.d95c942-py3.7-linux-x86_64.egg/pyrosetta/database
+basic.random.init_random_generator: 'RNG device' seed mode, using '/dev/urandom', seed=516172347 seed_offset=0 real_seed=516172347
+basic.random.init_random_generator: RandomGenerator:init: Normal mode, seed=516172347 RG_type=mt19937
+core.scoring.ScoreFunctionFactory: SCOREFUNCTION: ref2015
+core.scoring.etable: Starting energy table calculation
+core.scoring.etable: smooth_etable: changing atr/rep split to bottom of energy well
+core.scoring.etable: smooth_etable: spline smoothing lj etables (maxdis = 6)
+core.scoring.etable: smooth_etable: spline smoothing solvation etables (max_dis = 6)
+core.scoring.etable: Finished calculating energy tables.
+basic.io.database: Database file opened: scoring/score_functions/hbonds/ref2015_params/HBPoly1D.csv
+basic.io.database: Database file opened: scoring/score_functions/hbonds/ref2015_params/HBFadeIntervals.csv
+basic.io.database: Database file opened: scoring/score_functions/hbonds/ref2015_params/HBEval.csv
+basic.io.database: Database file opened: scoring/score_functions/hbonds/ref2015_params/DonStrength.csv
+basic.io.database: Database file opened: scoring/score_functions/hbonds/ref2015_params/AccStrength.csv
+core.chemical.GlobalResidueTypeSet: Finished initializing fa_standard residue type set.  Created 983 residue types
+core.chemical.GlobalResidueTypeSet: Total time to initialize 0.896616 seconds.
+basic.io.database: Database file opened: scoring/score_functions/rama/fd/all.ramaProb
+basic.io.database: Database file opened: scoring/score_functions/rama/fd/prepro.ramaProb
+basic.io.database: Database file opened: scoring/score_functions/omega/omega_ppdep.all.txt
+basic.io.database: Database file opened: scoring/score_functions/omega/omega_ppdep.gly.txt
+basic.io.database: Database file opened: scoring/score_functions/omega/omega_ppdep.pro.txt
+basic.io.database: Database file opened: scoring/score_functions/omega/omega_ppdep.valile.txt
+basic.io.database: Database file opened: scoring/score_functions/P_AA_pp/P_AA
+basic.io.database: Database file opened: scoring/score_functions/P_AA_pp/P_AA_n
+core.scoring.P_AA: shapovalov_lib::shap_p_aa_pp_smooth_level of 1( aka low_smooth ) got activated.
+basic.io.database: Database file opened: scoring/score_functions/P_AA_pp/shapovalov/10deg/kappa131/a20.prop
+core.import_pose.import_pose: File './PDBs/3GBN.pdb' automatically determined to be of type PDB
+core.chemical.GlobalResidueTypeSet: Loading (but possibly not actually using) 'NAG' from the PDB components dictionary for residue type 'pdb_NAG'
+core.chemical.GlobalResidueTypeSet: Loading (but possibly not actually using) 'EDO' from the PDB components dictionary for residue type 'pdb_EDO'
+core.chemical.GlobalResidueTypeSet: Loading (but possibly not actually using) 'GOL' from the PDB components dictionary for residue type 'pdb_GOL'
+core.chemical.GlobalResidueTypeSet: Loading (but possibly not actually using) 'ETX' from the PDB components dictionary for residue type 'pdb_ETX'
+core.chemical.GlobalResidueTypeSet: Loading (but possibly not actually using) 'CL' from the PDB components dictionary for residue type 'pdb_CL'
+core.chemical.GlobalResidueTypeSet: Loading (but possibly not actually using) 'BMA' from the PDB components dictionary for residue type 'pdb_BMA'
+core.chemical.GlobalResidueTypeSet: Loading (but possibly not actually using) 'MAN' from the PDB components dictionary for residue type 'pdb_MAN'
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue GLU 119
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue GLU 119
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OE1 on residue GLU 119
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OE2 on residue GLU 119
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LYS 134
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 134
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 134
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 134
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OG  on residue SER 160
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OG  on residue SER 161
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LYS 164
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 164
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 164
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 164
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LYS 167
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 167
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 167
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 167
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OG1 on residue THR 188
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG2 on residue THR 188
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue GLN 193
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue GLN 193
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OE1 on residue GLN 193
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NE2 on residue GLN 193
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue TYR 196
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD1 on residue TYR 196
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD2 on residue TYR 196
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE1 on residue TYR 196
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE2 on residue TYR 196
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CZ  on residue TYR 196
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OH  on residue TYR 196
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue GLN 197
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue GLN 197
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OE1 on residue GLN 197
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NE2 on residue GLN 197
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue ARG 213
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue ARG 213
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NE  on residue ARG 213
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CZ  on residue ARG 213
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NH1 on residue ARG 213
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NH2 on residue ARG 213
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue ARG 221
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue ARG 221
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NE  on residue ARG 221
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CZ  on residue ARG 221
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NH1 on residue ARG 221
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NH2 on residue ARG 221
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LYS 223
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 223
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 223
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 223
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue ASP 226
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OD1 on residue ASP 226
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OD2 on residue ASP 226
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OXT on residue ILE:CtermProteinFull 328
+core.conformation.Conformation: [ WARNING ] missing heavyatom: O1 on residue pdb_NAG 329
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 453
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 453
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OXT on residue ILE:CtermProteinFull 505
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG1 on residue ILE:CtermProteinFull 505
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG2 on residue ILE:CtermProteinFull 505
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD1 on residue ILE:CtermProteinFull 505
+core.conformation.Conformation: [ WARNING ] missing heavyatom: O1 on residue pdb_NAG 506
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OXT on residue SER:CtermProteinFull 671
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LYS 687
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 687
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 687
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 687
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue ARG 765
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue ARG 765
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NE  on residue ARG 765
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CZ  on residue ARG 765
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NH1 on residue ARG 765
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NH2 on residue ARG 765
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue GLN 785
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue GLN 785
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OE1 on residue GLN 785
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NE2 on residue GLN 785
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue ASN 787
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OD1 on residue ASN 787
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  ND2 on residue ASN 787
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 788
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 788
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 788
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LEU 791
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD1 on residue LEU 791
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD2 on residue LEU 791
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue GLU 802
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue GLU 802
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OE1 on residue GLU 802
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OE2 on residue GLU 802
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OG1 on residue THR 803
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG2 on residue THR 803
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LYS 808
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 808
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 808
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 808
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue LYS 813
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD  on residue LYS 813
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE  on residue LYS 813
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  NZ  on residue LYS 813
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CG  on residue TYR 814
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD1 on residue TYR 814
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CD2 on residue TYR 814
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE1 on residue TYR 814
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CE2 on residue TYR 814
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  CZ  on residue TYR 814
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OH  on residue TYR 814
+core.conformation.Conformation: [ WARNING ] missing heavyatom:  OXT on residue GLN:CtermProteinFull 823
+core.conformation.Conformation: [ WARNING ] missing heavyatom: O1 on residue pdb_NAG 824
+core.conformation.Conformation: [ WARNING ] missing heavyatom: O1 on residue pdb_NAG 825
+core.conformation.Conformation: [ WARNING ] missing heavyatom: O1 on residue pdb_BMA 826
+core.conformation.Conformation: [ WARNING ] missing heavyatom: O1 on residue pdb_MAN 827
+core.conformation.Conformation: Found disulfide between residues 8 469
+core.conformation.Conformation: current variant for 8 CYS
+core.conformation.Conformation: current variant for 469 CYS
+core.conformation.Conformation: current variant for 8 CYD
+core.conformation.Conformation: current variant for 469 CYD
+core.conformation.Conformation: Found disulfide between residues 533 607
+core.conformation.Conformation: current variant for 533 CYS
+core.conformation.Conformation: current variant for 607 CYS
+core.conformation.Conformation: current variant for 533 CYD
+core.conformation.Conformation: current variant for 607 CYD
+core.conformation.Conformation: Found disulfide between residues 692 759
+core.conformation.Conformation: current variant for 692 CYS
+core.conformation.Conformation: current variant for 759 CYS
+core.conformation.Conformation: current variant for 692 CYD
+core.conformation.Conformation: current variant for 759 CYD
+core.conformation.Conformation: Found disulfide between residues 46 279
+core.conformation.Conformation: current variant for 46 CYS
+core.conformation.Conformation: current variant for 279 CYS
+core.conformation.Conformation: current variant for 46 CYD
+core.conformation.Conformation: current variant for 279 CYD
+core.conformation.Conformation: Found disulfide between residues 59 71
+core.conformation.Conformation: current variant for 59 CYS
+core.conformation.Conformation: current variant for 71 CYS
+core.conformation.Conformation: current variant for 59 CYD
+core.conformation.Conformation: current variant for 71 CYD
+core.conformation.Conformation: Found disulfide between residues 94 140
+core.conformation.Conformation: current variant for 94 CYS
+core.conformation.Conformation: current variant for 140 CYS
+core.conformation.Conformation: current variant for 94 CYD
+core.conformation.Conformation: current variant for 140 CYD
+core.conformation.Conformation: Found disulfide between residues 793 822
+core.conformation.Conformation: current variant for 793 CYS
+core.conformation.Conformation: current variant for 822 CYS
+core.conformation.Conformation: current variant for 793 CYD
+core.conformation.Conformation: current variant for 822 CYD
+core.conformation.Conformation: Found disulfide between residues 476 480
+core.conformation.Conformation: current variant for 476 CYS
+core.conformation.Conformation: current variant for 480 CYS
+core.conformation.Conformation: current variant for 476 CYD
+core.conformation.Conformation: current variant for 480 CYD
+core.conformation.Conformation: Found disulfide between residues 283 307
+core.conformation.Conformation: current variant for 283 CYS
+core.conformation.Conformation: current variant for 307 CYS
+core.conformation.Conformation: current variant for 283 CYD
+core.conformation.Conformation: current variant for 307 CYD
+core.pack.pack_missing_sidechains: packing residue number 119 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 134 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 160 because of missing atom number 6 atom name  OG 
+core.pack.pack_missing_sidechains: packing residue number 161 because of missing atom number 6 atom name  OG 
+core.pack.pack_missing_sidechains: packing residue number 164 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 167 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 188 because of missing atom number 6 atom name  OG1
+core.pack.pack_missing_sidechains: packing residue number 193 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 196 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 197 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 213 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 221 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 223 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 226 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 329 because of missing atom number 10 atom name O1
+core.pack.pack_missing_sidechains: packing residue number 453 because of missing atom number 8 atom name  CE 
+core.pack.pack_missing_sidechains: packing residue number 505 because of missing atom number 7 atom name  CG1
+core.pack.pack_missing_sidechains: packing residue number 506 because of missing atom number 10 atom name O1
+core.pack.pack_missing_sidechains: packing residue number 687 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 765 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 785 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 787 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 788 because of missing atom number 7 atom name  CD 
+core.pack.pack_missing_sidechains: packing residue number 791 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 802 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 803 because of missing atom number 6 atom name  OG1
+core.pack.pack_missing_sidechains: packing residue number 808 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 813 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 814 because of missing atom number 6 atom name  CG 
+core.pack.pack_missing_sidechains: packing residue number 824 because of missing atom number 10 atom name O1
+core.pack.pack_missing_sidechains: packing residue number 825 because of missing atom number 10 atom name O1
+core.pack.pack_missing_sidechains: packing residue number 826 because of missing atom number 7 atom name O1
+core.pack.pack_missing_sidechains: packing residue number 827 because of missing atom number 7 atom name O1
+core.pack.task: Packer task: initialize from command line() 
+core.scoring.ScoreFunctionFactory: SCOREFUNCTION: ref2015
+basic.io.database: Database file opened: scoring/score_functions/elec_cp_reps.dat
+core.scoring.elec.util: Read 40 countpair representative atoms
+core.pack.dunbrack.RotamerLibrary: shapovalov_lib_fixes_enable option is true.
+core.pack.dunbrack.RotamerLibrary: shapovalov_lib::shap_dun10_smooth_level of 1( aka lowest_smooth ) got activated.
+core.pack.dunbrack.RotamerLibrary: Binary rotamer library selected: /projects/kasp8735/software/anaconda3/lib/python3.7/site-packages/pyrosetta-2022.14+release.d95c942-py3.7-linux-x86_64.egg/pyrosetta/database/rotamer/shapovalov/StpDwn_0-0-0/Dunbrack10.lib.bin
+core.pack.dunbrack.RotamerLibrary: Using Dunbrack library binary file '/projects/kasp8735/software/anaconda3/lib/python3.7/site-packages/pyrosetta-2022.14+release.d95c942-py3.7-linux-x86_64.egg/pyrosetta/database/rotamer/shapovalov/StpDwn_0-0-0/Dunbrack10.lib.bin'.
+core.pack.dunbrack.RotamerLibrary: Dunbrack 2010 library took 0.137179 seconds to load from binary
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 469 rotamers at 33 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.RelaxScriptManager: Reading relax scripts list from database.
+core.scoring.ScoreFunctionFactory: SCOREFUNCTION: ref2015
+protocols.relax.RelaxScriptManager: Looking for MonomerRelax2019.txt
+protocols.relax.RelaxScriptManager: ================== Reading script file: /projects/kasp8735/software/anaconda3/lib/python3.7/site-packages/pyrosetta-2022.14+release.d95c942-py3.7-linux-x86_64.egg/pyrosetta/database/sampling/relax_scripts/MonomerRelax2019.txt ==================
+protocols.relax.RelaxScriptManager: repeat %%nrepeats%%
+protocols.relax.RelaxScriptManager: coord_cst_weight 1.0
+protocols.relax.RelaxScriptManager: scale:fa_rep 0.040
+protocols.relax.RelaxScriptManager: repack
+protocols.relax.RelaxScriptManager: scale:fa_rep 0.051
+protocols.relax.RelaxScriptManager: min 0.01
+protocols.relax.RelaxScriptManager: coord_cst_weight 0.5
+protocols.relax.RelaxScriptManager: scale:fa_rep 0.265
+protocols.relax.RelaxScriptManager: repack
+protocols.relax.RelaxScriptManager: scale:fa_rep 0.280
+protocols.relax.RelaxScriptManager: min 0.01
+protocols.relax.RelaxScriptManager: coord_cst_weight 0.0
+protocols.relax.RelaxScriptManager: scale:fa_rep 0.559
+protocols.relax.RelaxScriptManager: repack
+protocols.relax.RelaxScriptManager: scale:fa_rep 0.581
+protocols.relax.RelaxScriptManager: min 0.01
+protocols.relax.RelaxScriptManager: coord_cst_weight 0.0
+protocols.relax.RelaxScriptManager: scale:fa_rep 1
+protocols.relax.RelaxScriptManager: repack
+protocols.relax.RelaxScriptManager: min 0.00001
+protocols.relax.RelaxScriptManager: accept_to_best
+protocols.relax.RelaxScriptManager: endrepeat
+protocols.relax.FastRelax: CMD: repeat  5717.85  0  0  0.55
+protocols.relax.FastRelax: CMD: coord_cst_weight  5717.85  0  0  0.55
+protocols.relax.FastRelax: CMD: scale:fa_rep  -38.7638  0  0  0.022
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 42200 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -1755.33  0  0  0.022
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1697.16  0  0  0.02805
+protocols.relax.FastRelax: CMD: min  -1840.94  0  0  0.02805
+protocols.relax.FastRelax: CMD: coord_cst_weight  -1840.94  0  0  0.02805
+protocols.relax.FastRelax: CMD: scale:fa_rep  -846.401  0  0  0.14575
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 38263 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -998.224  0  0  0.14575
+protocols.relax.FastRelax: CMD: scale:fa_rep  -944.29  0  0  0.154
+protocols.relax.FastRelax: CMD: min  -1031.27  0  0  0.154
+protocols.relax.FastRelax: CMD: coord_cst_weight  -1031.27  0  0  0.154
+protocols.relax.FastRelax: CMD: scale:fa_rep  -117.073  0  0  0.30745
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 36266 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -123.439  0  0  0.30745
+protocols.relax.FastRelax: CMD: scale:fa_rep  -53.5062  0  0  0.31955
+protocols.relax.FastRelax: CMD: min  -53.6564  0  0  0.31955
+protocols.relax.FastRelax: CMD: coord_cst_weight  -53.6564  0  0  0.31955
+protocols.relax.FastRelax: CMD: scale:fa_rep  1278.15  0  0  0.55
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 34785 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  1252.22  0  0  0.55
+protocols.relax.FastRelax: CMD: min  918.048  0  0  0.55
+protocols.relax.FastRelax: MRP: 0  918.048  918.048  0  0  
+protocols.relax.FastRelax: CMD: accept_to_best  918.048  0  0  0.55
+protocols.relax.FastRelax: CMD: endrepeat  918.048  0  0  0.55
+protocols.relax.FastRelax: CMD: coord_cst_weight  918.048  0  0  0.55
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1695.3  0  0  0.022
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 42423 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -1865.41  0  0  0.022
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1814.81  0  0  0.02805
+protocols.relax.FastRelax: CMD: min  -1885.92  0  0  0.02805
+protocols.relax.FastRelax: CMD: coord_cst_weight  -1885.92  0  0  0.02805
+protocols.relax.FastRelax: CMD: scale:fa_rep  -948.435  0  0  0.14575
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 38204 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -1090.69  0  0  0.14575
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1039.65  0  0  0.154
+protocols.relax.FastRelax: CMD: min  -1105.46  0  0  0.154
+protocols.relax.FastRelax: CMD: coord_cst_weight  -1105.46  0  0  0.154
+protocols.relax.FastRelax: CMD: scale:fa_rep  -230.884  0  0  0.30745
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 36229 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -236.66  0  0  0.30745
+protocols.relax.FastRelax: CMD: scale:fa_rep  -169.493  0  0  0.31955
+protocols.relax.FastRelax: CMD: min  -238.391  0  0  0.31955
+protocols.relax.FastRelax: CMD: coord_cst_weight  -238.391  0  0  0.31955
+protocols.relax.FastRelax: CMD: scale:fa_rep  963.026  0  0  0.55
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 34786 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  959.482  0  0  0.55
+protocols.relax.FastRelax: CMD: min  908.149  0  0  0.55
+protocols.relax.FastRelax: MRP: 1  908.149  908.149  0  0  
+protocols.relax.FastRelax: CMD: accept_to_best  908.149  0  0  0.55
+protocols.relax.FastRelax: CMD: endrepeat  908.149  0  0  0.55
+protocols.relax.FastRelax: CMD: coord_cst_weight  908.149  0  0  0.55
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1709.57  0  0  0.022
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 42423 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -1869.31  0  0  0.022
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1819.54  0  0  0.02805
+protocols.relax.FastRelax: CMD: min  -1889.96  0  0  0.02805
+protocols.relax.FastRelax: CMD: coord_cst_weight  -1889.96  0  0  0.02805
+protocols.relax.FastRelax: CMD: scale:fa_rep  -972.466  0  0  0.14575
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 38201 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -1089.62  0  0  0.14575
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1038.63  0  0  0.154
+protocols.relax.FastRelax: CMD: min  -1097.83  0  0  0.154
+protocols.relax.FastRelax: CMD: coord_cst_weight  -1097.83  0  0  0.154
+protocols.relax.FastRelax: CMD: scale:fa_rep  -217.098  0  0  0.30745
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 36229 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -228.635  0  0  0.30745
+protocols.relax.FastRelax: CMD: scale:fa_rep  -161.42  0  0  0.31955
+protocols.relax.FastRelax: CMD: min  -238.397  0  0  0.31955
+protocols.relax.FastRelax: CMD: coord_cst_weight  -238.397  0  0  0.31955
+protocols.relax.FastRelax: CMD: scale:fa_rep  961.689  0  0  0.55
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 34797 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  958.419  0  0  0.55
+protocols.relax.FastRelax: CMD: min  906.553  0  0  0.55
+protocols.relax.FastRelax: MRP: 2  906.553  906.553  0  0  
+protocols.relax.FastRelax: CMD: accept_to_best  906.553  0  0  0.55
+protocols.relax.FastRelax: CMD: endrepeat  906.553  0  0  0.55
+protocols.relax.FastRelax: CMD: coord_cst_weight  906.553  0  0  0.55
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1708.39  0  0  0.022
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_BMA
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_MAN
+core.pack.pack_rotamers: built 42423 rotamers at 809 positions.
+core.pack.interaction_graph.interaction_graph_factory: Instantiating LinearMemoryInteractionGraph
+protocols.relax.FastRelax: CMD: repack  -1866.26  0  0  0.022
+protocols.relax.FastRelax: CMD: scale:fa_rep  -1816.61  0  0  0.02805
+protocols.relax.FastRelax: CMD: min  -1887.73  0  0  0.02805
+protocols.relax.FastRelax: CMD: coord_cst_weight  -1887.73  0  0  0.02805
+protocols.relax.FastRelax: CMD: scale:fa_rep  -968.551  0  0  0.14575
+core.pack.task: Packer task: initialize from command line() 
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_ETX
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_GOL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_CL
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_EDO
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for pdb_NAG
+core.pack.rotamer_set.RotamerSet_: Using simple Rotamer generation logic for
