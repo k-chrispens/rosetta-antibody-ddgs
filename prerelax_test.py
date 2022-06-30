@@ -46,11 +46,12 @@ fr.constrain_relax_to_start_coords(True)
 fr.set_task_factory(tf)
 fr.set_movemap_factory(mmf)
 
-print("Before:", scorefxn(pose))
-fr.apply(pose)
-print("After:", scorefxn(pose))
-name = re.sub(r"(./PDBs/\w{4}).pdb", r"\1_crtsc.pdb", pose.pdb_info().name())
-pose.dump_pdb(name)
+for pose in poses:
+    print("Before:", scorefxn(pose))
+    fr.apply(pose)
+    print("After:", scorefxn(pose))
+    name = re.sub(r"(./PDBs/\w{4}).pdb", r"\1_crtsc.pdb", pose.pdb_info().name())
+    pose.dump_pdb(name)
 
 # for pose in poses:
 #     print("Before:", scorefxn(pose))
