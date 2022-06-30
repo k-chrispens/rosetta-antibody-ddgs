@@ -13,6 +13,11 @@ crtsc_nobb_scores = np.array()
 harm_scores = np.array()
 unrelaxed_scores = np.array()
 no_constraints_scores = np.array()
+crtsc_rmsds = np.array()
+crtsc_nobb_rmsds = np.array()
+harm_rmsds = np.array()
+unrelaxed_rmsds = np.array()
+no_constraints_rmsds = np.array()
 sfxn = get_fa_scorefxn()
 
 for pdb in pdbs:
@@ -31,6 +36,16 @@ for pdb in pdbs:
         unrelaxed_scores, sfxn.score(pose) / pose.total_residue())
     no_constraints_scores = np.append(
         no_constraints_scores, sfxn.score(unconst) / unconst.total_residue())
+    crtsc_rmsds = np.append(
+        crtsc_rmsds, all_atom_rmsd(pose, crtsc))
+    crtsc_nobb_rmsds = np.append(
+        crtsc_nobb_rmsds, all_atom_rmsd(pose, crtsc_nobb))
+    harm_rmsds = np.append(
+        harm_rmsds, all_atom_rmsd(pose, harm))
+    unrelaxed_rmsds = np.append(
+        unrelaxed_rmsds, 0)
+    no_constraints_rmsds = np.append(
+        no_constraints_rmsds, all_atom_rmsd(pose, unconst))
 
 per_res_score = pd.DataFrame({
     "#PDB": pdbs,
@@ -41,8 +56,15 @@ per_res_score = pd.DataFrame({
     "unrelaxed_scores": unrelaxed_scores
 })
 
-rmsds = pd.read_csv("./raw_datasets/RMSD_graph_data.csv")
-rmsds["unrelaxed"] = 0
+rmsds = pd.DataFrame({
+    "#PDB": pdbs,
+    "sidechain_constr": crtsc_nobb_rmsds,
+    "constr": crtsc_rmsds,
+    "harm": harm_rmsds,
+    "unconstr": no_constraints_rmsds,
+    "unrelaxed": unrelaxed_rmsds
+})
+
 
 df = pd.concat([rmsds, per_res_score], axis=1)
 
