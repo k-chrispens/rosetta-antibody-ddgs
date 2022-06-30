@@ -21,7 +21,7 @@ NOTE: Got done with 8 on Blanca over 24 hours."""
 #     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
 #     poses.append(pose)
 
-pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", "3GBN", "4FQY"]
+pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", "3GBN"] # , "4FQY" removed because I accidentally ran without the for loop at the end
 poses = []
 for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
