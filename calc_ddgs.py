@@ -153,6 +153,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
 
 
 df = pd.DataFrame(columns=["Position", "WT_AA", "Mut_AA", "DDG"])
+print(rando)
 muts = re.split(";", rando["Mutations"].values[0]) # FIXME LATER to take out rando
 print(muts)
 scorefxn = get_fa_scorefxn()
