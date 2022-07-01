@@ -20,7 +20,6 @@ init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 rando = data[data["#PDB"] == "1YY9"].sample(random_state=41)
 
-
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
     mut_posi = []
@@ -153,6 +152,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
 
 
 df = pd.DataFrame(columns=["Position", "WT_AA", "Mut_AA", "DDG"])
+print(rando)
 muts = re.split(";", rando["Mutations"].values[0]) # FIXME LATER to take out rando
 print(muts)
 scorefxn = get_fa_scorefxn()
@@ -177,7 +177,7 @@ start=time.time()
 print("Mutations:", rando["Mutations"].values[0])
 total=calc_ddg(pose, pos, wt, mut, repack_range, False)
 print("DDG: ", total)
-df=df.append({"Position": [p-485 for p in pos], "WT_AA": wt,
+df=df.append({"Position": pos, "WT_AA": wt,
                 "Mut_AA": mut, "DDG": total}, ignore_index=True)
 end=time.time()
 print("Total time:", end-start, "seconds")
