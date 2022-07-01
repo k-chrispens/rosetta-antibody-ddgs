@@ -160,7 +160,7 @@ for i in muts:
     pos = []
     wt = []
     mut = []
-    pdb = rando["#PDB"] # FIXME LATER to take out rando
+    pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb") #FIXME LATER to do all pdbs
     repack_range=12
     all = list(map(lambda x: re.sub(
