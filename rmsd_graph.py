@@ -69,7 +69,7 @@ df2 = df2.set_index(
 
 df3 = (pd.concat([df1, df2], axis=1)
          .sort_index()
-         .reset_index(drop=True))
+         .reset_index())
 df3 = df3.T.drop_duplicates().T
 print(df3)
 
