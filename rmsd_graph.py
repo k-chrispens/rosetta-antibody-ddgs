@@ -7,8 +7,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+init()
 
-pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "4FQY"] # "1YY9", "3GBN", removed for now since they aren't done
+pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", "4FQY"] # "3GBN", removed for now since it isn't done
 crtsc_scores = []
 crtsc_nobb_scores = []
 harm_scores = []
