@@ -15,7 +15,7 @@ init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 # data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 # pdbs = data["#PDB"].unique()
 
-pdbs = ["3GBN", "4FQY"] # "1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", removed because blanca restarted for some reason
+pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", "3GBN", "4FQY"]
 poses = []
 for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
@@ -37,7 +37,7 @@ mmf.all_chi(True)
 # Harmonic
 apcg = AtomPairConstraintGenerator()
 apcg.set_max_distance(9.0)
-apcg.set_sd(0.5)
+apcg.set_sd(0.25)  # changing the sd this time
 apcg.set_ca_only(True)
 apcg.set_use_harmonic_function(True)
 
@@ -60,6 +60,7 @@ for harm_pose in harm_poses:
     print("Before:", scorefxn(harm_pose))
     fr.apply(harm_pose)
     print("After:", scorefxn(harm_pose))
-    name = re.sub(r"(./PDBs/\w{4}).pdb", r"\1_harm.pdb", harm_pose.pdb_info().name())
+    # changed name for changed sd
+    name = re.sub(r"(./PDBs/\w{4}).pdb",
+                  r"\1_harm_025.pdb", harm_pose.pdb_info().name())
     harm_pose.dump_pdb(name)
-

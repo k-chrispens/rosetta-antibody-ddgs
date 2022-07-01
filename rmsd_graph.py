@@ -73,5 +73,5 @@ df3 = (pd.concat([df1, df2], axis=1)
 df3 = df3.T.drop_duplicates().T
 print(df3)
 
-plot = sns.scatterplot(x="RMSD (Å)", y="Per Residue Score (REU)", hue="Method", data=df3)
+plot = sns.scatterplot(x="RMSD (Å)", y="Per Residue Score (REU)", hue="Method", style="#PDB", data=df3)
 plt.savefig("./images/rmsd_plot.png")

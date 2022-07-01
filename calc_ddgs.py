@@ -71,7 +71,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
         pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_design))
 
-    # Enable design
+    # Enable design (change the residues to the mutated residues)
     for i in range(len(posi)):
       aa_to_design = pyrosetta.rosetta.core.pack.task.operation.RestrictAbsentCanonicalAASRLT()
       aa_to_design.aas_to_keep(amino[i])
@@ -94,11 +94,11 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
         minmover.apply(pose)
 
     # Fast Relax
-    # fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
-    # fr.constrain_relax_to_start_coords(True)
-    # fr.set_task_factory(tf)
-    # fr.set_movemap(mm)
-    # fr.apply(pose)
+    fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
+    fr.constrain_relax_to_start_coords(True)
+    fr.set_task_factory(tf)
+    fr.set_movemap(mm)
+    fr.apply(pose)
 
 
 def unbind(pose):
