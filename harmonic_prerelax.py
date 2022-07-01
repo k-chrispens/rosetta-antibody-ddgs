@@ -8,14 +8,14 @@ from rosetta.core.pack.task import TaskFactory
 from rosetta.protocols.relax import FastRelax
 from rosetta.core.scoring import *
 from pyrosetta import *
-# import pandas as pd
+import pandas as pd
 init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 
 # So the process doesn't take as long
-# data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-# pdbs = data["#PDB"].unique()
+data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+pdbs = data["#PDB"].unique()
 
-pdbs = ["1YY9", "3GBN", "4FQY"] # "1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", removed to run another job for reasons
+# pdbs = ["1YY9", "3GBN", "4FQY"] # "1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", removed to run another job for reasons
 poses = []
 for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
@@ -62,5 +62,5 @@ for harm_pose in harm_poses:
     print("After:", scorefxn(harm_pose))
     # changed name for changed sd
     name = re.sub(r"(./PDBs/\w{4}).pdb",
-                  r"\1_harm_025.pdb", harm_pose.pdb_info().name())
+                  r"\1_all.pdb", harm_pose.pdb_info().name())
     harm_pose.dump_pdb(name)

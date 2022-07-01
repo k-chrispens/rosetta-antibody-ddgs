@@ -18,7 +18,7 @@ from pyrosetta import *
 init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 
 data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-rando = data[data["#PDB"] == "1YY9"].sample(random_state=41)
+# rando = data[data["#PDB"] == "1YY9"].sample(random_state=41) # for a test run
 
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
@@ -152,7 +152,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
 
 
 df = pd.DataFrame(columns=["Position", "WT_AA", "Mut_AA", "DDG"])
-print(rando)
+# FIXME REMAKE FOR ALL PDBS
 muts = re.split(";", rando["Mutations"].values[0]) # FIXME LATER to take out rando
 print(muts)
 scorefxn = get_fa_scorefxn()
