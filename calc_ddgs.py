@@ -162,7 +162,7 @@ pos = []
 wt = []
 mut = []
 pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
-pose = pose_from_pdb(f"./PDBs/{pdb}.pdb") #FIXME LATER to do all pdbs
+pose = pose_from_pdb(f"./PDBs/{pdb}_harm.pdb") #FIXME LATER to do all pdbs
 repack_range=12
 all = list(map(lambda x: re.sub(
     r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), muts))
