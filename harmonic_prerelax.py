@@ -15,7 +15,7 @@ init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 # data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 # pdbs = data["#PDB"].unique()
 
-pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", "3GBN", "4FQY"]
+pdbs = ["3GBN", "4FQY"] # "1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", removed because blanca restarted for some reason
 poses = []
 for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
