@@ -5,6 +5,7 @@ from pyrosetta import *
 from rosetta.core.scoring import *
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import seaborn as sns
 
 pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "4FQY"] # "1YY9", "3GBN", removed for now since they aren't done
@@ -89,3 +90,4 @@ df3 = (pd.concat([df1, df2], axis=1)
          .reset_index())
 
 plot = sns.scatterplot(x="RMSD", y="Per_Res_Score", data=df3)
+plt.savefig("./images/rmsd_plot.png")
