@@ -18,7 +18,7 @@ from pyrosetta import *
 init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 
 data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-rando = data.sample(random_state=41)
+rando = data[data["#PDB"] == "1YY9"].sample(random_state=41)
 
 
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
@@ -161,8 +161,8 @@ scorefxn = get_fa_scorefxn()
 pos = []
 wt = []
 mut = []
-pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
-pose = pose_from_pdb(f"./PDBs/{pdb}_harm.pdb") #FIXME LATER to do all pdbs
+# pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
+pose = pose_from_pdb(f"./PDBs/1YY9_harm.pdb") #FIXME LATER to do all pdbs, hardcoding for now. Delete samples/rando later too
 repack_range=12
 all = list(map(lambda x: re.sub(
     r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), muts))
