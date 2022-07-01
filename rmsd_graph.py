@@ -41,11 +41,11 @@ for pdb in pdbs:
 
 per_res_score = pd.DataFrame({
     "#PDB": pdbs,
-    "sidechain_constr_scores": crtsc_nobb_scores,
-    "constr_scores": crtsc_scores,
-    "harm_scores": harm_scores,
-    "unconstr_scores": no_constraints_scores,
-    "unrelaxed_scores": unrelaxed_scores
+    "sidechain_constr": crtsc_nobb_scores,
+    "constr": crtsc_scores,
+    "harm": harm_scores,
+    "unconstr": no_constraints_scores,
+    "unrelaxed": unrelaxed_scores
 })
 
 rmsds = pd.DataFrame({
@@ -57,17 +57,9 @@ rmsds = pd.DataFrame({
     "unrelaxed": unrelaxed_rmsds
 })
 
-
-df = pd.concat([rmsds, per_res_score], axis=1)
-
-df1 = df.melt(id_vars=["#PDB"],
-              value_vars=['sidechain_constr_scores', "constr_scores",
-                          "harm_scores", "unconstr_scores", "unrelaxed_scores"],
-              var_name='#PDB', value_name='Per_Res_Score')
-df2 = df.melt(id_vars=['#PDB'],
-              value_vars=['sidechain_constr', "constr",
-                          "harm", "unconstr", "unrelaxed"],
-              var_name='#PDB', value_name='RMSD')
+df1 = per_res_score.melt(
+    id_vars=["#PDB"], var_name='Method', value_name='Per Residue Score (REU)')
+df2 = rmsds.melt(id_vars=['#PDB'], var_name='Method', value_name='RMSD (Å)')
 
 df1 = df1.set_index(
     ["#PDB", df1.groupby(["#PDB"]).cumcount()])
@@ -76,9 +68,10 @@ df2 = df2.set_index(
 
 
 df3 = (pd.concat([df1, df2], axis=1)
-         .sort_index(level=2)
-         .reset_index(level=2, drop=True)
-         .reset_index())
+         .sort_index()
+         .reset_index(drop=True))
+df3 = df3.T.drop_duplicates().T
+print(df3)
 
-plot = sns.scatterplot(x="RMSD", y="Per_Res_Score", data=df3)
+plot = sns.scatterplot(x="RMSD (Å)", y="Per Residue Score (REU)", hue="Method", data=df3)
 plt.savefig("./images/rmsd_plot.png")
