@@ -154,30 +154,32 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
 
 df = pd.DataFrame(columns=["Position", "WT_AA", "Mut_AA", "DDG"])
 muts = re.split(";", rando["Mutations"].values[0]) # FIXME LATER to take out rando
+print(muts)
 scorefxn = get_fa_scorefxn()
 
-for i in muts:
-    pos = []
-    wt = []
-    mut = []
-    pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
-    pose = pose_from_pdb(f"./PDBs/{pdb}.pdb") #FIXME LATER to do all pdbs
-    repack_range=12
-    all = list(map(lambda x: re.sub(
-        r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), i))
-    for i in all:
-        chain, start, posi, muta = re.split(":", i)
-        pos.append(pose.pdb_info().pdb2pose(chain, posi))
-        wt.append(start)
-        mut.append(muta)
+# for i in muts: # FIXME LATER for all mutations
+pos = []
+wt = []
+mut = []
+pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
+pose = pose_from_pdb(f"./PDBs/{pdb}.pdb") #FIXME LATER to do all pdbs
+repack_range=12
+all = list(map(lambda x: re.sub(
+    r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), muts))
+print(all)
+for i in all:
+    chain, start, posi, muta = re.split(":", i)
+    pos.append(pose.pdb_info().pdb2pose(chain, int(posi)))
+    wt.append(start)
+    mut.append(muta)
 
-    start=time.time()
-    print("Mutations:", rando["Mutations"].values[0])
-    total=calc_ddg(pose, pos, wt, mut, repack_range, False)
-    print("DDG: ", total)
-    df=df.append({"Position": [p-485 for p in pos], "WT_AA": wt,
-                   "Mut_AA": mut, "DDG": total}, ignore_index=True)
-    end=time.time()
-    print("Total time:", end-start, "seconds")
+start=time.time()
+print("Mutations:", rando["Mutations"].values[0])
+total=calc_ddg(pose, pos, wt, mut, repack_range, False)
+print("DDG: ", total)
+df=df.append({"Position": [p-485 for p in pos], "WT_AA": wt,
+                "Mut_AA": mut, "DDG": total}, ignore_index=True)
+end=time.time()
+print("Total time:", end-start, "seconds")
 
 print(df)
