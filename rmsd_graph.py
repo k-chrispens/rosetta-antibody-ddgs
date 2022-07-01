@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "1YY9", "3GBN", "4FQY"]
+pdbs = ["1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", "4FQY"] # "1YY9", "3GBN", removed for now since they aren't done
 crtsc_scores = np.array()
 crtsc_nobb_scores = np.array()
 harm_scores = np.array()
