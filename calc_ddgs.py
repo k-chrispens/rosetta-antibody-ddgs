@@ -98,7 +98,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     fr.set_movemap(mm)
     fr.apply(pose)
 
-
+# FIXME: Does this actually work to unbind stuff? Or will this just translate the whole pose?
 def unbind(pose):
     STEP_SIZE = 100
     JUMP = 2
@@ -150,20 +150,19 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
     return ddG
 
 pdbs = data["#PDB"].unique()
+df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
+scorefxn = get_fa_scorefxn()
+repack_range=12
+
 for pdb in pdbs:
     points = data[data["#PDB"] == pdb]
+    pose = pose_from_pdb(f"./PDBs/{pdb}_all.pdb") 
     for point in points:
-        df = pd.DataFrame(columns=["Position", "WT_AA", "Mut_AA", "DDG"])
-        # FIXME REMAKE FOR ALL PDBS
         muts = re.split(";", point["Mutations"].values[0])
         print(muts)
-        scorefxn = get_fa_scorefxn()
         pos = []
         wt = []
         mut = []
-        # pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
-        pose = pose_from_pdb(f"./PDBs/1YY9_all.pdb") #FIXME LATER to do all pdbs, hardcoding for now. Delete samples/rando later too
-        repack_range=12
         all = list(map(lambda x: re.sub(
             r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), muts))
         print(all)
@@ -177,7 +176,7 @@ for pdb in pdbs:
         print("Mutations:", point["Mutations"].values[0])
         total=calc_ddg(pose, pos, wt, mut, repack_range, False)
         print("DDG: ", total)
-        df=df.append({"Position": pos, "WT_AA": wt,
+        df=df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
         end=time.time()
         print("Total time:", end-start, "seconds")
