@@ -149,36 +149,37 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
         (bound_unmutated - unbound_unmutated)
     return ddG
 
+pdbs = data["#PDB"].unique()
+for pdb in pdbs:
+    points = data[data["#PDB"] == pdb]
+    for point in points:
+        df = pd.DataFrame(columns=["Position", "WT_AA", "Mut_AA", "DDG"])
+        # FIXME REMAKE FOR ALL PDBS
+        muts = re.split(";", point["Mutations"].values[0])
+        print(muts)
+        scorefxn = get_fa_scorefxn()
+        pos = []
+        wt = []
+        mut = []
+        # pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
+        pose = pose_from_pdb(f"./PDBs/1YY9_all.pdb") #FIXME LATER to do all pdbs, hardcoding for now. Delete samples/rando later too
+        repack_range=12
+        all = list(map(lambda x: re.sub(
+            r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), muts))
+        print(all)
+        for i in all:
+            chain, start, posi, muta = re.split(":", i)
+            pos.append(pose.pdb_info().pdb2pose(chain, int(posi)))
+            wt.append(start)
+            mut.append(muta)
 
-df = pd.DataFrame(columns=["Position", "WT_AA", "Mut_AA", "DDG"])
-# FIXME REMAKE FOR ALL PDBS
-muts = re.split(";", rando["Mutations"].values[0]) # FIXME LATER to take out rando
-print(muts)
-scorefxn = get_fa_scorefxn()
-
-# for i in muts: # FIXME LATER for all mutations
-pos = []
-wt = []
-mut = []
-# pdb = rando["#PDB"].values[0] # FIXME LATER to take out rando
-pose = pose_from_pdb(f"./PDBs/1YY9_harm.pdb") #FIXME LATER to do all pdbs, hardcoding for now. Delete samples/rando later too
-repack_range=12
-all = list(map(lambda x: re.sub(
-    r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), muts))
-print(all)
-for i in all:
-    chain, start, posi, muta = re.split(":", i)
-    pos.append(pose.pdb_info().pdb2pose(chain, int(posi)))
-    wt.append(start)
-    mut.append(muta)
-
-start=time.time()
-print("Mutations:", rando["Mutations"].values[0])
-total=calc_ddg(pose, pos, wt, mut, repack_range, False)
-print("DDG: ", total)
-df=df.append({"Position": pos, "WT_AA": wt,
-                "Mut_AA": mut, "DDG": total}, ignore_index=True)
-end=time.time()
-print("Total time:", end-start, "seconds")
+        start=time.time()
+        print("Mutations:", point["Mutations"].values[0])
+        total=calc_ddg(pose, pos, wt, mut, repack_range, False)
+        print("DDG: ", total)
+        df=df.append({"Position": pos, "WT_AA": wt,
+                        "Mut_AA": mut, "DDG": total}, ignore_index=True)
+        end=time.time()
+        print("Total time:", end-start, "seconds")
 
 print(df)

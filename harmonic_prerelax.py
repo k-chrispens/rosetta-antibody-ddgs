@@ -8,14 +8,14 @@ from rosetta.core.pack.task import TaskFactory
 from rosetta.protocols.relax import FastRelax
 from rosetta.core.scoring import *
 from pyrosetta import *
-import pandas as pd
+# import pandas as pd
 init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 
 # So the process doesn't take as long
-data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-pdbs = data["#PDB"].unique()
+# data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+# pdbs = data["#PDB"].unique()
 
-# pdbs = ["1YY9", "3GBN", "4FQY"] # "1DQJ", "1MHP", "1MLC", "1N8Z", "1VFB", removed to run another job for reasons
+pdbs = ["5C6T", "3NGB", "3N85", "3L5X", "3G6D", "3BN9", "2NZ9", "2NYY", "2NY7", "1XGQ", "1XGP", "1NCA", "1KIR", "1KIQ", "1KIP"] # remaining pdbs to do
 poses = []
 for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
