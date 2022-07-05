@@ -15,7 +15,7 @@ init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 # data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 # pdbs = data["#PDB"].unique()
 
-pdbs = ["5C6T", "3NGB", "3N85", "3L5X", "3G6D", "3BN9", "2NZ9", "2NYY", "2NY7", "1XGQ", "1XGP", "1NCA", "1KIR", "1KIQ", "1KIP"] # remaining pdbs to do
+pdbs = ["1XGP", "1NCA", "1KIR", "1KIQ", "1KIP"] # remaining pdbs to do
 poses = []
 for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")

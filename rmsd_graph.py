@@ -84,4 +84,5 @@ print(df3)
 
 plot = sns.scatterplot(x="RMSD (Å)", y="Per Residue Score (REU)",
                        hue="Method", style="#PDB", data=df3)
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0)
 plt.savefig("./images/rmsd_plot.png")
