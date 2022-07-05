@@ -18,7 +18,6 @@ from pyrosetta import *
 init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 
 data = pd.read_csv("./raw_datasets/interface_data_use.csv")
-# rando = data[data["#PDB"] == "1YY9"].sample(random_state=41) # for a test run
 
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
