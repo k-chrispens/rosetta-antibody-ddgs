@@ -12,14 +12,15 @@ sns.set_context("notebook", font_scale = 0.6)
 
 data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/interface_data_use.csv")
 
-### Plotting average LD per PDB
+### Plotting average LD per PDB NOTE: for interface mutations
 
 averages = pd.DataFrame()
 averages["#PDB"] = data["#PDB"].unique()
 averages_list = []
+interface_data = data[data["Interface?"] == True]
 
 for pdb in averages["#PDB"]:
-    lds = data[data["#PDB"] == pdb]["LD"]
+    lds = interface_data[interface_data["#PDB"] == pdb]["LD"]
     averages_list.append(sum(lds) / len(lds))
 
 averages["Average LD"] = averages_list
@@ -34,7 +35,7 @@ averages["Source"] = data["Source"].unique()
 averages_list = []
 
 for source in averages["Source"]:
-    lds = data[data["Source"] == source]["LD"]
+    lds = interface_data[interface_data["Source"] == source]["LD"]
     averages_list.append(sum(lds) / len(lds))
 
 averages["Average LD"] = averages_list
@@ -53,7 +54,7 @@ muts_to_aa = []
 
 for aa in aas:
     # count regex matches in mutations
-    all_mut_aa = data["Mutations"].apply(lambda x: re.findall(
+    all_mut_aa = interface_data["Mutations"].apply(lambda x: re.findall(
         fr"\w:\w\d+{aa}", x))
     num_mut_per_data = all_mut_aa.apply(len)
     total_mut = sum(num_mut_per_data)
@@ -71,7 +72,7 @@ mut_pdbs["#PDB"] = data["#PDB"].unique()
 mut_pdbs_list = []
 
 for pdb in mut_pdbs["#PDB"]:
-    lds = data[data["#PDB"] == pdb]["LD"]
+    lds = interface_data[interface_data["#PDB"] == pdb]["LD"]
     mut_pdbs_list.append(sum(lds))
 
 mut_pdbs["Number of Mutations"] = mut_pdbs_list
