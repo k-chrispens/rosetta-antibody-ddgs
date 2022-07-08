@@ -1,0 +1,42 @@
+CLUSTAL O(1.2.4) multiple sequence alignment
+
+
+Wisconsin_2005          MKTIIALSYILCLVFAQKLPGNDNSTATLCLGHHAVPNGTIVKTITNDQIEVTNATELVQ	60
+PDB_Hong_Kong_1968      ----------------------ADPGATLCLGHHAVPNGTLVKTITDDQIEVTNATELVQ	38
+                                               :  **************:*****:*************
+
+Wisconsin_2005          SSSTGGICDSPHQILDGENCTLIDALLGDPQCDGFQNKKWDLFVERSKAYSNCYPYDVPD	120
+PDB_Hong_Kong_1968      SSSTGKICNNPHRILDGIDCTLIDALLGDPHCDVFQNETWDLFVERSKAFSNCYPYDVPD	98
+                        ***** **:.**:**** :***********:** ***:.**********:**********
+
+Wisconsin_2005          YASLRSLVASSGTLEFNDESFNWTGVTQNGTSSSCKRRSNNSFFSRLNWLTHLKFKYPAL	180
+PDB_Hong_Kong_1968      YASLRSLVASSGTLEFITEGFTWTGVTQNGGSNACKRGPGSGFFSRLNWLTKSGSTYPVL	158
+                        ****************  *.*.******** *.:***  ...*********:   .**.*
+
+Wisconsin_2005          NVTMPNNEKFDKLYIWGVHHPVTDNDQIFLYAQASGRITVSTKRSQQTVIPNIGSRPRIR	240
+PDB_Hong_Kong_1968      NVTMPNNDNFDKLYIWGVHHPSTNQEQTSLYVQASGRVTVSTRRSQQTIIPNIGSRPWVR	218
+                        *******::************ *:::*  **.*****:****:*****:******** :*
+
+Wisconsin_2005          NIPSRISIYWTIVKPGDILLINSTGNLIAPRGYFKIRSGKSSIMRSDAPIGKCNSECITP	300
+PDB_Hong_Kong_1968      GLSSRISIYWTIVKPGDVLVINSNGNLIAPRGYFKMRTGKSSIMRSDAPIDTCISECITP	278
+                        .: **************:*:***.***********:*:************..* ******
+
+Wisconsin_2005          NGSIPNDKPFQNVNRITYGACPRYVKQNTLKLATGMRNVPEKQTRGIFGAIAGFIENGWE	360
+PDB_Hong_Kong_1968      NGSIPNDKPFQNVNKITYGACPKYVKQNTLKLATGMRNVPEKQTRGLFGAIAGFIENGWE	338
+                        **************:*******:***********************:*************
+
+Wisconsin_2005          GMVDGWYGFRHQNSEGIGQAADLKSTQAAINQINGKLNRLIGKTNEKFHQIEKEFSEVEG	420
+PDB_Hong_Kong_1968      GMIDGWYGFRHQNSEGTGQAADLKSTQAAIDQINGKLNRVIEKTNEKFHQIEKEFSEVEG	398
+                        **:************* *************:********:* ******************
+
+Wisconsin_2005          RIQDLEKYVEDTKIDLWSYNAELLVALENQHTIDLTDSEMNKLFERTKKQLRENAEDMGN	480
+PDB_Hong_Kong_1968      RIQDLEKYVEDTKIDLWSYNAELLVALENQHTIDLTDSEMNKLFEKTGRQLRENAEDMGN	458
+                        *********************************************:* :***********
+
+Wisconsin_2005          GCFKIYHKCDNACIGSIRNGTYDHDVYRDEALNNRFQIKGVELKSGYKDWILWISFAISC	540
+PDB_Hong_Kong_1968      GCFKIYHKCDNACIESIRNGTYDHDVYRDEALNNRFQIK---------------------	497
+                        ************** ************************                     
+
+Wisconsin_2005          FLLCVALLGFIMWACQKGNIRCNICI	566
+PDB_Hong_Kong_1968      --------------------------	497
+                                                  

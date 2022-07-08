@@ -1,0 +1,42 @@
+CLUSTAL O(1.2.4) multiple sequence alignment
+
+
+PDB_Brevig_Mission_1918      -------------ADPGDTICIGYHANNSTDTVDTVLEKNVTVTHSVNLLEDSHNGKLCK	47
+New_Caledonia_1999           MKAKLLVLLCTFTATYADTICIGYHANNSTDTVDTVLEKNVTVTHSVNLLEDSHNGKLCL	60
+                                          *  .****************************************** 
+
+PDB_Brevig_Mission_1918      LKGIAPLQLGKCNIAGWLLGNPECDLLLTASSWSYIVETSNSENGTCYPGDFIDYEELRE	107
+New_Caledonia_1999           LKGIAPLQLGNCSVAGWILGNPECELLISKESWSYIVETPNPENGTCYPGYFADYEELRE	120
+                             **********:*.:***:******:**:: .******** * ******** * *******
+
+PDB_Brevig_Mission_1918      QLSSVSSFEKFEIFPKTSSWPNHETTKGVTAACSYAGASSFYRNLLWLTKKGSSYPKLSK	167
+New_Caledonia_1999           QLSSVSSFERFEIFPKESSWPNHTV-TGVSASCSHNGKSSFYRNLLWLTGKNGLYPNLSK	179
+                             *********:****** ****** . .**:*:**: * *********** *.. **:***
+
+PDB_Brevig_Mission_1918      SYVNNKGKEVLVLWGVHHPPTGTDQQSLYQNADAYVSVGSSKYNRRFTPEIAARPKVRDQ	227
+New_Caledonia_1999           SYVNNKEKEVLVLWGVHHPPNIGNQRALYHTENAYVSVVSSHYSRRFTPEIAKRPKVRDQ	239
+                             ****** *************.  :*::**:. :***** **:*.******** *******
+
+PDB_Brevig_Mission_1918      AGRMNYYWTLLEPGDTITFEATGNLIAPWYAFALNRGSGSGIITSDAPVHDCNTKCQTPH	287
+New_Caledonia_1999           EGRINYYWTLLEPGDTIIFEANGNLIAPWYAFALSRGFGSGIITSNAPMDECDAKCQTPQ	299
+                              **:************* ***.************.** *******:**:.:*::*****:
+
+PDB_Brevig_Mission_1918      GAINSSLPFQNIHPVTIGECPKYVRSTKLRMATGLRNIPSIQSRGLFGAIAGFIEGGWTG	347
+New_Caledonia_1999           GAINSSLPFQNVHPVTIGECPKYVRSAKLRMVTGLRNIPSIQSRGLFGAIAGFIEGGWTG	359
+                             ***********:**************:****.****************************
+
+PDB_Brevig_Mission_1918      MIDGWYGYHHQNEQGSGYAADQKSTQNAIDGITNKVNSVIEKMNTQFTAVGKEFNNLERR	407
+New_Caledonia_1999           MVDGWYGYHHQNEQGSGYAADQKSTQNAINGITNKVNSVIEKMNTQFTAVGKEFNKLERR	419
+                             *:***************************:*************************:****
+
+PDB_Brevig_Mission_1918      IENLNKKVDDGFLDIWTYNAELLVLLENERTLDFHDSNVRNLYEKVKSQLKNNAKEIGNG	467
+New_Caledonia_1999           MENLNKKVDDGFLDIWTYNAELLVLLENERTLDFHDSNVKNLYEKVKSQLKNNAKEIGNG	479
+                             :**************************************:********************
+
+PDB_Brevig_Mission_1918      CFEFYHKCDDACMESVRNGTYDYPKYSEESKLNREEIDGVSGR-----------------	510
+New_Caledonia_1999           CFEFYHKCNNECMESVKNGTYDYPKYSEESKLNREKIDGVKLESMGVYQILAIYSTVASS	539
+                             ********:: *****:******************:****. .                 
+
+PDB_Brevig_Mission_1918      --------------------------	510
+New_Caledonia_1999           LVLLVSLGAISFWMCSNGSLQCRICI	565
+                                                       
