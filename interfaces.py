@@ -138,7 +138,7 @@ interfaces = []
 for index, row in data.iterrows():
     mutations = re.split(";", row["Mutations"])
     for mutation in mutations:
-        mutation = re.sub(r"\w:(\w\d+)\w", r"\1", mutation)
+        mutation = re.sub(r"\w:(\w\d+)\w+", r"\1", mutation)
         is_interface = mutation in pdb_dict[row["#PDB"]]
         if is_interface:
             break
