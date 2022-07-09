@@ -1,6 +1,4 @@
-"""Running statistics on full dataset to get some of the characteristics.
-Author: Karson Chrispens
-Requires ab_proj env."""
+""""""
 
 import numpy as np
 import pandas as pd
@@ -10,7 +8,7 @@ import re
 
 sns.set_context("notebook", font_scale = 0.6)
 
-data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/interface_data_use.csv")
+data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/use_this_data.csv")
 
 ### Plotting average LD per PDB NOTE: for interface mutations
 
@@ -117,3 +115,65 @@ histplt = sns.histplot(data = df, kde = True, element="step")
 plt.xlabel("ΔΔG (kcal/mol)")
 plt.savefig("./images/ddG_hist_interfaces.png")
 plt.clf()
+
+### Epistatic 1st order coeffs
+
+coeff_dict = {
+    "S29F": 0.29620232960015264,
+    "N30S": 0.7980125108028767,
+    "N31S": 0.7945511047351377,
+    "S52I": 3.1534573246328,
+    "S56T": 1.206309296497863,
+    "T57A": 0.5818191866544703,
+    "A58N": -0.6496541403257541,
+    "S70T": 0.06962278800732419,
+    "I73K": 2.4629962706463875,
+    "F74S": 2.5137817437253727,
+    "S75T": 0.12123731392549425,
+    "N76S": 0.3360267429510174,
+    "N82AS": 0.08872932391145028,
+    "T83R": 0.14462831079363442,
+    "F91Y": -0.04742070420420187,
+    "S100BY": 0.33575423269144783
+}
+
+coeffs = pd.DataFrame({
+    "Coefficients": coeff_dict.values(),
+    "Mutations": coeff_dict.keys()
+})
+
+barplt = sns.barplot(x="Mutations", y="Coefficients", data=coeffs, palette="rocket")
+sns.despine(bottom=True)
+barplt.axhline(y=0, color="black")
+barplt.set_xlabel("Mutations (CR9114)")
+plt.savefig("./images/coeffs_1_6261.png")
+plt.clf()
+
+coeff_dict = {
+    "P28T": 0.837341564950566,
+    "R30S": 0.7541460966005754,
+    "T57A": -0.0345329369999683,
+    "K58N": 0.11930498851566934,
+    "P61Q": -0.050442789001268966,
+    "D73E": -0.00649964868499584,
+    "F74S": 0.6424008942583567,
+    "A75T": -0.08220430609783097,
+    "G76S": 0.23617983576184245,
+    "V78A": 0.09830564802979372,
+    "V100L": 0.04400281039483982
+}
+
+coeffs = pd.DataFrame({
+    "Coefficients": coeff_dict.values(),
+    "Mutations": coeff_dict.keys()
+})
+
+barplt = sns.barplot(x="Mutations", y="Coefficients",
+                     data=coeffs, palette="vlag")
+sns.despine(bottom=True)
+barplt.axhline(y=0, color="black")
+barplt.set_xlabel("Mutations (CR6261)")
+plt.savefig("./images/coeffs_1_9114.png")
+plt.clf()
+
+### Epistatic 2nd order coeffs
