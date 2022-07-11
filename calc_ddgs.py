@@ -101,7 +101,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 # FIXME: Does this actually work to unbind stuff? Or will this just translate the whole pose?
 def unbind(pose):
     STEP_SIZE = 100
-    JUMP = 2
+    JUMP = 2 # JUMP WILL NEED TO ADJUST FOR EACH POSE, I will write separate programs for diff poses.
     trans_mover = rigid.RigidBodyTransMover(pose, JUMP)
     trans_mover.step_size(STEP_SIZE)
     trans_mover.apply(pose)
