@@ -153,6 +153,8 @@ pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 scorefxn = get_fa_scorefxn()
 repack_range=8
+# TO ALLOW PARALLEL RUNS AND TESTS:
+pdbs = pdbs[:8]
 
 for pdb in pdbs:
     points = data[data["#PDB"] == pdb]
