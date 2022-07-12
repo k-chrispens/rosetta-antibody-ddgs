@@ -12,12 +12,13 @@ from pyrosetta.rosetta.core.select.movemap import *
 from pyrosetta.rosetta.core.select import *
 from pyrosetta.rosetta.protocols import *
 from pyrosetta.rosetta.core.pack.task import *
+from pyrosetta.rosetta.core.import_pose import *
 import sys
 from pyrosetta import *
 # NOTE: Why use soft_rep_design?
 init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 
-data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
@@ -157,12 +158,13 @@ repack_range=8
 pdbs = pdbs[:8]
 
 for pdb in pdbs:
-    points = data[data["#PDB"] == pdb]
-    pose = pose_from_pdb(f"./PDBs/{pdb}_all.pdb") 
-    for point in points:
-        muts = re.split(";", point["Mutations"].values[0])
+    points = data.loc[data["#PDB"] == pdb]
+    pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb") 
+    for index, point in points.iterrows():
+        print(point)
+        muts = re.split(";", point["Mutations"])
         print(muts)
-        jump = point["Jump".values[0]]
+        jump = point["Jump"]
         pos = []
         wt = []
         mut = []
@@ -176,7 +178,7 @@ for pdb in pdbs:
             mut.append(muta)
 
         start=time.time()
-        print("Mutations:", point["Mutations"].values[0])
+        print("Mutations:", point["Mutations"])
         total=calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
         print("DDG: ", total)
         df=df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
@@ -184,4 +186,4 @@ for pdb in pdbs:
         end=time.time()
         print("Total time:", end-start, "seconds")
 
-print(df)
+df.to_csv("./rosetta_ddgs_norelax.csv", index=False)
