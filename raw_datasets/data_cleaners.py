@@ -181,7 +181,7 @@ def mason_etal_clean(filedf: pd.DataFrame):
             else:
                 ld += 1
                 one_hot += "1"
-                mut = f"B:{a[i]}{i + mut_start_pos}{b[i]};"
+                mut = f"H:{a[i]}{i + mut_start_pos}{b[i]};"
                 muts = muts + mut
         muts = muts[:-1]
         lds.append(ld)

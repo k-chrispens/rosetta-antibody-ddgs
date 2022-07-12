@@ -91,25 +91,25 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
         packer.apply(pose)
         minmover.apply(pose)
 
-    # Fast Relax
-    fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
-    fr.constrain_relax_to_start_coords(True)
-    fr.set_task_factory(tf)
-    fr.set_movemap(mm)
-    fr.apply(pose)
+    # Fast Relax FIXME
+    # fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
+    # fr.constrain_relax_to_start_coords(True)
+    # fr.set_task_factory(tf)
+    # fr.set_movemap(mm)
+    # fr.apply(pose)
 
 # FIXME: Does this actually work to unbind stuff? Or will this just translate the whole pose?
-def unbind(pose):
+def unbind(pose, jump):
     STEP_SIZE = 100
-    JUMP = 2 # JUMP WILL NEED TO ADJUST FOR EACH POSE, I will write separate programs for diff poses.
-    trans_mover = rigid.RigidBodyTransMover(pose, JUMP)
+    # JUMP WILL NEED TO ADJUST FOR EACH POSE.
+    trans_mover = rigid.RigidBodyTransMover(pose, jump)
     trans_mover.step_size(STEP_SIZE)
     trans_mover.apply(pose)
 
 
-def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
+def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 
-    scorefxn = get_score_function()
+    scorefxn = get_score_function() # ADJUST SFXN HERE
     mutPose = pose.clone()
     original = pose.clone()
     unbound_mutPose = pose.clone()
@@ -128,14 +128,14 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
     bound_mutated = scorefxn(mutPose)
 
     # Unbound unmutated
-    unbind(unbound_original)
+    unbind(unbound_original, jump)
     pack_and_relax(unbound_original, pos, wt, repack_range, scorefxn)
     if output_pdb:
         unbound_original.dump_pdb("3_unbound_unmutated.pdb")
     unbound_unmutated = scorefxn(unbound_original)
 
     # Unbound mutated
-    unbind(unbound_mutPose)
+    unbind(unbound_mutPose, jump)
     pack_and_relax(unbound_mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         unbound_mutPose.dump_pdb("4_unbound_mutated.pdb")
@@ -152,7 +152,9 @@ def calc_ddg(pose, pos, wt, mut, repack_range, output_pdb=False):
 pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 scorefxn = get_fa_scorefxn()
-repack_range=12
+repack_range=8
+# TO ALLOW PARALLEL RUNS AND TESTS:
+pdbs = pdbs[:8]
 
 for pdb in pdbs:
     points = data[data["#PDB"] == pdb]
@@ -160,6 +162,7 @@ for pdb in pdbs:
     for point in points:
         muts = re.split(";", point["Mutations"].values[0])
         print(muts)
+        jump = point["Jump".values[0]]
         pos = []
         wt = []
         mut = []
@@ -174,7 +177,7 @@ for pdb in pdbs:
 
         start=time.time()
         print("Mutations:", point["Mutations"].values[0])
-        total=calc_ddg(pose, pos, wt, mut, repack_range, False)
+        total=calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
         print("DDG: ", total)
         df=df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
