@@ -15,7 +15,7 @@ init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 # data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 # pdbs = data["#PDB"].unique()
 
-pdbs = ["1XGP", "1NCA", "1KIR", "1KIQ", "1KIP"] # remaining pdbs to do
+pdbs = ["1BJ1", "1MHP", "1MLC", "3NGB", "3BN9", "2NZ9", "2B2X", "1CZ8"] # redoing pdbs with duplicates in structure
 poses = []
 for pdb in pdbs:
     pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")

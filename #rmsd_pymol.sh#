@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH --job-name=rmsd-pymol-job
+#SBATCH --output=rmsd-pymol.%j.out
+#SBATCH --time=24:00:00
+#SBATCH --qos=blanca-chbe-rdi
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --mail-type=END
+#SBATCH --mail-user=karson.chrispens@colorado.edu
+
+source ~/.bashrc
+which python
+python rmsd_pymol.py
