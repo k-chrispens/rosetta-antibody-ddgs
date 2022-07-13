@@ -111,10 +111,15 @@ def unbind(pose, jump):
 def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 
     scorefxn = get_score_function() # ADJUST SFXN HERE
-    mutPose = pose.clone()
-    original = pose.clone()
-    unbound_mutPose = pose.clone()
-    unbound_original = pose.clone()
+    # TESTING COPY VS CLONE
+    mutPose = Pose()
+    original = Pose()
+    unbound_mutPose = Pose()
+    unbound_original = Pose()
+    mutPose.detached_copy(pose)
+    original.detached_copy(pose)
+    unbound_mutPose.detached_copy(pose)
+    unbound_original.detached_copy(pose)
 
     # Bound unmutated
     pack_and_relax(original, pos, wt, repack_range, scorefxn)
@@ -154,9 +159,9 @@ pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 scorefxn = get_fa_scorefxn()
 repack_range=8
-# TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[9:20], next after is [21:30], 
-# then [31:38]. These were generated based on approx times I wanted to let them run.
-pdbs = pdbs[31:38]
+# TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30], 
+# then [30:38]. These were generated based on approx times I wanted to let them run.
+pdbs = [pdbs[8], pdbs[20], pdbs[30]]
 
 for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
@@ -188,4 +193,4 @@ for pdb in pdbs:
         end=time.time()
         print("Total time:", end-start, "seconds")
 
-df.to_csv("./rosetta_ddgs_norelax_3.csv", index=False)
+df.to_csv("./rosetta_ddgs_norelax_4.csv", index=False)
