@@ -155,7 +155,7 @@ df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 scorefxn = get_fa_scorefxn()
 repack_range=8
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[9:20], next after is [21:30], 
-# then [31:18]. These were generated based on approx times I wanted to let them run.
+# then [31:38]. These were generated based on approx times I wanted to let them run.
 pdbs = pdbs[9:20]
 
 for pdb in pdbs:
@@ -168,11 +168,14 @@ for pdb in pdbs:
         wt = []
         mut = []
         all = list(map(lambda x: re.sub(
-            r"(\w):(\w)(\d+\w*)(\w)", r"\1:\2:\3:\4", x), muts))
+            r"(\w):(\w)(\d+)(\w*)(\w)", r"\1:\2:\3:\5:\4", x), muts))
         print(all)
         for i in all:
-            chain, start, posi, muta = re.split(":", i)
-            pos.append(pose.pdb_info().pdb2pose(chain, int(posi)))
+            chain, start, posi, muta, ic = re.split(":", i)
+            if ic:
+                pos.append(pose.pdb_info().pdb2pose(chain, int(posi), ic))
+            else:
+                pos.append(pose.pdb_info().pdb2pose(chain, int(posi)))
             wt.append(start)
             mut.append(muta)
 
@@ -185,4 +188,4 @@ for pdb in pdbs:
         end=time.time()
         print("Total time:", end-start, "seconds")
 
-df.to_csv("./rosetta_ddgs_norelax.csv", index=False)
+df.to_csv("./rosetta_ddgs_norelax_1.csv", index=False)
