@@ -154,16 +154,15 @@ pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 scorefxn = get_fa_scorefxn()
 repack_range=8
-# TO ALLOW PARALLEL RUNS AND TESTS:
-pdbs = pdbs[:8]
+# TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[9:20], next after is [21:30], 
+# then [31:18]. These were generated based on approx times I wanted to let them run.
+pdbs = pdbs[9:20]
 
 for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
     pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb") 
     for index, point in points.iterrows():
-        print(point)
         muts = re.split(";", point["Mutations"])
-        print(muts)
         jump = point["Jump"]
         pos = []
         wt = []
