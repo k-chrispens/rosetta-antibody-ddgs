@@ -168,7 +168,7 @@ for pdb in pdbs:
         wt = []
         mut = []
         all = list(map(lambda x: re.sub(
-            r"(\w):(\w)(\d+)(\w)", r"\1:\2:\3:\4", x), muts))
+            r"(\w):(\w)(\d+\w*)(\w)", r"\1:\2:\3:\4", x), muts))
         print(all)
         for i in all:
             chain, start, posi, muta = re.split(":", i)
