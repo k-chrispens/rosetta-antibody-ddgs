@@ -156,7 +156,7 @@ scorefxn = get_fa_scorefxn()
 repack_range=8
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[9:20], next after is [21:30], 
 # then [31:38]. These were generated based on approx times I wanted to let them run.
-pdbs = pdbs[9:20]
+pdbs = pdbs[31:38]
 
 for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
@@ -188,4 +188,4 @@ for pdb in pdbs:
         end=time.time()
         print("Total time:", end-start, "seconds")
 
-df.to_csv("./rosetta_ddgs_norelax_1.csv", index=False)
+df.to_csv("./rosetta_ddgs_norelax_3.csv", index=False)
