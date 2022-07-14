@@ -1,4 +1,5 @@
 """Calculating ddGs. Adapted from Brian Petersen's new_ddg_unbind.py
+REQUIRED - cmd line args: int repack_range, int rounds_packmin, str sfxn ("beta" or "ref"), str path (to output)
 Author: Karson Chrispens"""
 
 import re
@@ -15,10 +16,18 @@ from pyrosetta.rosetta.core.pack.task import *
 from pyrosetta.rosetta.core.import_pose import *
 import sys
 from pyrosetta import *
-# NOTE: Why use soft_rep_design?
-init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 
+args = sys.argv
+print(f"Running with settings: repack_range = {str(args[1])}, rounds_packmin = {str(args[2])}, sfxn = {str(args[3])}, path = {str(args[4])}")
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
+
+# INIT
+# NOTE: Why use soft_rep_design?
+if str(args[3]) == "beta":
+    init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")  # -soft_rep_design
+else:
+    init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")  # -soft_rep_design
+
 
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
@@ -27,19 +36,19 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
         pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector())
     mut_posi[0].set_index(posi[0])
     for i in range(1, len(posi)):
-      mut_posi.append(
-          pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector())
-      mut_posi[i].set_index(posi[i])
+        mut_posi.append(
+            pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector())
+        mut_posi[i].set_index(posi[i])
     # print(pyrosetta.rosetta.core.select.get_residues_from_subset(mut_posi.apply(pose)))
     if len(posi) == 1:
-      comb_select = mut_posi[0]
+        comb_select = mut_posi[0]
     if len(posi) >= 2:
-      comb_select = pyrosetta.rosetta.core.select.residue_selector.OrResidueSelector(
-          mut_posi[0], mut_posi[1])
-    if len(posi) >= 3:
-      for i in range(2, len(posi)):
         comb_select = pyrosetta.rosetta.core.select.residue_selector.OrResidueSelector(
-            comb_select, mut_posi[i])
+            mut_posi[0], mut_posi[1])
+    if len(posi) >= 3:
+        for i in range(2, len(posi)):
+            comb_select = pyrosetta.rosetta.core.select.residue_selector.OrResidueSelector(
+                comb_select, mut_posi[i])
 
     # Select Neighbor Position
     nbr_selector = pyrosetta.rosetta.core.select.residue_selector.NeighborhoodResidueSelector()
@@ -72,10 +81,10 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
     # Enable design (change the residues to the mutated residues)
     for i in range(len(posi)):
-      aa_to_design = pyrosetta.rosetta.core.pack.task.operation.RestrictAbsentCanonicalAASRLT()
-      aa_to_design.aas_to_keep(amino[i])
-      tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
-          aa_to_design,  mut_posi[i]))
+        aa_to_design = pyrosetta.rosetta.core.pack.task.operation.RestrictAbsentCanonicalAASRLT()
+        aa_to_design.aas_to_keep(amino[i])
+        tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
+            aa_to_design,  mut_posi[i]))
 
     mmf = MoveMapFactory()
     mmf.add_bb_action(mm_enable, nbr_selector)
@@ -88,7 +97,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     minmover = pyrosetta.rosetta.protocols.minimization_packing.MinMover()
     minmover.score_function(scorefxn)
     minmover.movemap_factory(mmf)
-    for _ in range(2):
+    for _ in range(int(args[2])):
         packer.apply(pose)
         minmover.apply(pose)
 
@@ -99,7 +108,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     # fr.set_movemap(mm)
     # fr.apply(pose)
 
-# FIXME: Does this actually work to unbind stuff? Or will this just translate the whole pose?
+
 def unbind(pose, jump):
     STEP_SIZE = 100
     # JUMP WILL NEED TO ADJUST FOR EACH POSE.
@@ -110,7 +119,7 @@ def unbind(pose, jump):
 
 def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 
-    scorefxn = get_score_function() # ADJUST SFXN HERE
+    scorefxn = get_score_function()  # ADJUST SFXN HERE
     # TESTING COPY VS CLONE
     mutPose = Pose()
     original = Pose()
@@ -155,17 +164,19 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
         (bound_unmutated - unbound_unmutated)
     return ddG
 
+
 pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
-scorefxn = get_fa_scorefxn()
-repack_range=8
-# TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30], 
+scorefxn = pyrosetta.create_score_function()
+repack_range = int(args[1])  # Try 12, where did 8 come from?
+# TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
 # then [30:38]. These were generated based on approx times I wanted to let them run.
-pdbs = [pdbs[8], pdbs[20], pdbs[30]]
+# pdbs = [pdbs[8], pdbs[20], pdbs[30]]
+count = 0
 
 for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
-    pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb") 
+    pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb")
     for index, point in points.iterrows():
         muts = re.split(";", point["Mutations"])
         jump = point["Jump"]
@@ -184,13 +195,16 @@ for pdb in pdbs:
             wt.append(start)
             mut.append(muta)
 
-        start=time.time()
+        start = time.time()
         print("Mutations:", point["Mutations"])
-        total=calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
+        total = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
         print("DDG: ", total)
-        df=df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
+        df = df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
-        end=time.time()
+        end = time.time()
         print("Total time:", end-start, "seconds")
+        count += 1
+        if count % 20 == 0:
+            df.to_csv("./rosetta_ddgs_relax.csv", index=False)
 
-df.to_csv("./rosetta_ddgs_norelax_4.csv", index=False)
+df.to_csv(f"{str(args[4])}", index=False)
