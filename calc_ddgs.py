@@ -23,6 +23,7 @@ options = "r:p:bo:cs"
 long_options = ["repack_range=", "rounds_packmin=",
                 "beta", "output_path=", "cartesian", "soft_rep"]
 values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s": False}
+
 try:
     # Parsing argument
     arguments, values = getopt.getopt(args, options, long_options)
@@ -57,6 +58,10 @@ try:
 except getopt.error as err:
     # output error, and return with an error code
     print(str(err))
+
+if values_dict["o"] == "./UNNAMED.csv":
+    print("SOMETHING BREAKING")
+    quit()
 
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
@@ -142,6 +147,10 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     minmover.movemap_factory(mmf)
     minmover.max_iter(2000)
     minmover.tolerance(0.00001)
+
+    if values_dict["c"]:
+        minmover.cartesian(True)
+    
     for _ in range(int(values_dict["p"])):
         packer.apply(pose)
         minmover.apply(pose)
