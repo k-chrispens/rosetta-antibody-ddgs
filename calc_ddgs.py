@@ -1,5 +1,6 @@
 """Calculating ddGs. Adapted from Brian Petersen's new_ddg_unbind.py
-REQUIRED - cmd line args: int repack_range, int rounds_packmin, str sfxn ("beta" or "ref"), str path (to output)
+REQUIRED - cmd line args: int repack_range, int rounds_packmin, flag beta (scorefunction), 
+str path (to output), flag cartesian, flag soft_rep
 Author: Karson Chrispens"""
 
 import re
@@ -14,19 +15,61 @@ from pyrosetta.rosetta.core.select import *
 from pyrosetta.rosetta.protocols import *
 from pyrosetta.rosetta.core.pack.task import *
 from pyrosetta.rosetta.core.import_pose import *
-import sys
+import getopt, sys
 from pyrosetta import *
 
-args = sys.argv
-print(f"Running with settings: repack_range = {str(args[1])}, rounds_packmin = {str(args[2])}, sfxn = {str(args[3])}, path = {str(args[4])}")
+args = sys.argv[1:]
+options = "r:p:bo:cs"
+long_options = ["repack_range=", "rounds_packmin=",
+                "beta", "output_path=", "cartesian", "soft_rep"]
+values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s": False}
+try:
+    # Parsing argument
+    arguments, values = getopt.getopt(args, options, long_options)
+
+    # checking each argument
+    for currentArgument, currentValue in arguments:
+
+        if currentArgument in ("-r", "--repack_range"):
+            values_dict["r"] = currentValue
+            print(f"Repack Range = {currentValue}")
+
+        elif currentArgument in ("-p", "--rounds_packmin"):
+            values_dict["p"] = currentValue
+            print(f"Rounds of Pack and Minimization = {currentValue}")
+
+        elif currentArgument in ("-b", "--beta"):
+            values_dict["b"] = True
+            print(f"Using beta score function")
+
+        elif currentArgument in ("-o", "--output_path"):
+            values_dict["o"] = currentValue
+            print(f"Output path = {currentValue}")
+
+        elif currentArgument in ("-c", "--cartesian"):
+            values_dict["c"] = True
+            print("Enabling cartesian minimization flag.")
+
+        elif currentArgument in ("s", "--soft_rep"):
+            values_dict["s"] = True
+            print("Using soft_rep_design flag")
+
+except getopt.error as err:
+    # output error, and return with an error code
+    print(str(err))
+
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 # INIT
 # NOTE: Why use soft_rep_design?
-if str(args[3]) == "beta":
-    init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")  # -soft_rep_design
+if values_dict["b"] and values_dict["s"]:
+    init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
+elif values_dict["b"]:
+    init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
+elif values_dict["s"]:
+    init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 else:
-    init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")  # -soft_rep_design
+    init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
 
 
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
@@ -99,7 +142,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     minmover.movemap_factory(mmf)
     minmover.max_iter(2000)
     minmover.tolerance(0.00001)
-    for _ in range(int(args[2])):
+    for _ in range(int(values_dict["p"])):
         packer.apply(pose)
         minmover.apply(pose)
 
@@ -170,7 +213,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 scorefxn = get_score_function()
-repack_range = int(args[1])  # Try 12, where did 8 come from?
+repack_range = int(values_dict["r"])  # Try 12, where did 8 come from?
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
 # then [30:38]. These were generated based on approx times I wanted to let them run.
 count = 0
@@ -207,6 +250,6 @@ for pdb in pdbs:
         print("Total time:", end-start, "seconds")
         count += 1
         if count % 20 == 0:
-            df.to_csv(f"{str(args[4])}", index=False)
+            df.to_csv(values_dict["o"], index=False)
 
-df.to_csv(f"{str(args[4])}", index=False)
+df.to_csv(values_dict["o"], index=False)
