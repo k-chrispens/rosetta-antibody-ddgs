@@ -27,10 +27,11 @@ values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s
 try:
     # Parsing argument
     arguments, values = getopt.getopt(args, options, long_options)
-
+    
+    print("args: ", args) # FIXME
     # checking each argument
     for currentArgument, currentValue in arguments:
-
+        print("CHECK") # FIXME
         if currentArgument in ("-r", "--repack_range"):
             values_dict["r"] = currentValue
             print(f"Repack Range = {currentValue}")
