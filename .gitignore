@@ -6,4 +6,4 @@
 *.out
 *.ipynb_checkpoints
 test.py
-#run_multiple_jobs.sh#
+\#*

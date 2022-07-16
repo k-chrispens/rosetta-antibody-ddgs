@@ -6,9 +6,6 @@ Author: Karson Chrispens"""
 import re
 import time
 import pandas as pd
-import math
-import matplotlib.pyplot as plt
-import random
 import numpy as np
 from pyrosetta.rosetta.core.select.movemap import *
 from pyrosetta.rosetta.core.select import *
@@ -152,9 +149,8 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     if values_dict["c"]:
         minmover.cartesian(True)
     
-    for _ in range(int(values_dict["p"])):
-        packer.apply(pose)
-        minmover.apply(pose)
+    packer.apply(pose)
+    minmover.apply(pose)
 
     # Fast Relax FIXME
     # fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
@@ -252,12 +248,16 @@ for pdb in pdbs:
 
         start = time.time()
         print("Mutations:", point["Mutations"])
-        total = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
+        total = 0
+        for p in range(int(values_dict["p"]):
+            total += calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
+        total = total / int(values_dict["p"])
         print("DDG: ", total)
         df = df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
+        print("Avg time per ensemble member:", (end-start)/int(values_dict["p"]), "seconds"
         count += 1
         if count % 20 == 0:
             df.to_csv(values_dict["o"], index=False)
