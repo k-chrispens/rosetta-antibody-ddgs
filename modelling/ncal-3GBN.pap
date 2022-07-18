@@ -40,7 +40,7 @@ New_Caledonia_1999  RMENLNKKVDDGFLDIWTYNAELLVLLENERTLDFHDSNVKNLYEKVKSQLKNNAKEI
 
  _aln.pos              470       480       490       500       510       520
 3GBN_all            GNGCFEFYHKCDDACMESVRNGTYDYPKYSEESKLNREEI/EVQLVESGAEVKKPGSS 
-New_Caledonia_1999  GNGCFEFYHKCNNECMESVKNGTYDYPKYSEESKLNREKI-D---------------- 
+New_Caledonia_1999  GNGCFEFYHKCNNECMESVKNGTYDYPKYSEESKLNREKI------------------ 
  _consrvd           ***********   ***** ****************** *
 
  _aln.pos                530       540       550       560       570       580
@@ -65,10 +65,10 @@ New_Caledonia_1999  ----------------------------------------------------------
 
  _aln.pos              760       770       780       790       800       810
 3GBN_all            TWDRRPTAYVVFGGGTKLTVLEELQANKATLVCLISDFYGVETTTPSKQSNNKYAASS 
-New_Caledonia_1999  --------------GVKL---------------------------------------- 
- _consrvd                         * **
+New_Caledonia_1999  ---------------------------------------------------------- 
+ _consrvd
 
  _aln.pos
 3GBN_all            YLSCQ 
-New_Caledonia_1999  ----E 
+New_Caledonia_1999  ----- 
  _consrvd

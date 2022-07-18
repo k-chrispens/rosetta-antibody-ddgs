@@ -1,0 +1,79 @@
+ _aln.pos               10        20        30        40        50        60
+4FQY_all        -------------------PG-----ATLCLGHHAVPNGTLVKTITDDQIEVTNATELVQSS 
+Wisconsin_2005  MKTIIALSYILCLVFAQKLPGNDNSTATLCLGHHAVPNGTIVKTITNDQIEVTNATELVQSS 
+ _consrvd                          **     ************** ***** ***************
+
+ _aln.pos             70        80        90       100       110       120
+4FQY_all        STGKICNNPHRILDGIDCTLIDALLGDPHCDVFQNETWDLFVERSKAFSNCYPYDVPDYASL 
+Wisconsin_2005  STGGICDSPHQILDGENCTLIDALLGDPQCDGFQNKKWDLFVERSKAYSNCYPYDVPDYASL 
+ _consrvd       *** **  ** ****  *********** ** ***  ********** **************
+
+ _aln.pos          130       140       150       160       170       180
+4FQY_all        RSLVASSGTLEFITEGFTWTGVTQNGGSNACKRGPGSGFFSRLNWLTKSGSTYPVLNVTMPN 
+Wisconsin_2005  RSLVASSGTLEFNDESFNWTGVTQNGTSSSCKRRSNNSFFSRLNWLTHLKFKYPALNVTMPN 
+ _consrvd       ************  * * ******** *  ***     *********     ** *******
+
+ _aln.pos        190       200       210       220       230       240
+4FQY_all        NDNFDKLYIWGVHHPSTNQEQTSLYVQASGRVTVSTRRSQQTIIPNIGSRPWVRGLSSRISI 
+Wisconsin_2005  NEKFDKLYIWGVHHPVTDNDQIFLYAQASGRITVSTKRSQQTVIPNIGSRPRIRNIPSRISI 
+ _consrvd       *  ************ *   *  ** ***** **** ***** ********  *   *****
+
+ _aln.pos      250       260       270       280       290       300       310
+4FQY_all        YWTIVKPGDVLVINSNGNLIAPRGYFKMRTGKSSIMRSDAPIDTCISECITPNGSIPNDKPF 
+Wisconsin_2005  YWTIVKPGDILLINSTGNLIAPRGYFKIRSGKSSIMRSDAPIGKCNSECITPNGSIPNDKPF 
+ _consrvd       ********* * *** *********** * ************  * ****************
+
+ _aln.pos              320       330       340       350       360       370
+4FQY_all        QNVNKITYGACPKYVKQNTLKLATGMRNVPEK/--GLFGAIAGFIENGWEGMIDGWYGFRHQ 
+Wisconsin_2005  QNVNRITYGACPRYVKQNTLKLATGMRNVPEKQTRGIFGAIAGFIENGWEGMVDGWYGFRHQ 
+ _consrvd       **** ******* *******************   * *************** *********
+
+ _aln.pos            380       390       400       410       420       430
+4FQY_all        NSEGTGQAADLKSTQAAIDQINGKLNRVIEKTNEKFHQIEKEFSEVEGRIQDLEKYVEDTKI 
+Wisconsin_2005  NSEGIGQAADLKSTQAAINQINGKLNRLIGKTNEKFHQIEKEFSEVEGRIQDLEKYVEDTKI 
+ _consrvd       **** ************* ******** * ********************************
+
+ _aln.pos          440       450       460       470       480       490
+4FQY_all        DLWSYNAELLVALENQHTIDLTDSEMNKLFEKTGRQLRENAEDMGNGCFKIYHKCDNACIES 
+Wisconsin_2005  DLWSYNAELLVALENQHTIDLTDSEMNKLFERTKKQLRENAEDMGNGCFKIYHKCDNACIGS 
+ _consrvd       ******************************* *  ************************* *
+
+ _aln.pos        500       510       520       530       540       550
+4FQY_all        IRNGTYDHDVYRDEALNNRFQ/QVQLVQSGAEVKKPGSSVKVSCKSSGGTSNNYAISWVRQA 
+Wisconsin_2005  IRNGTYDHDVYRDEALNNRFQ-----------IK---------------------------- 
+ _consrvd       *********************            *
+
+ _aln.pos      560       570       580       590       600       610       620
+4FQY_all        PGQGLDWMGGISPIFGSTAYAQKFQGRVTISADIFSNTAYMELNSLTSEDTAVYFCARHGNY 
+Wisconsin_2005  -------------------------------------------------------------- 
+ _consrvd
+
+ _aln.pos              630       640       650       660       670       680
+4FQY_all        YYYSGMDVWGQGTTVTVASTKGPSVFPLAPGGTAALGCLVKDYFPEPVTVSWNSGALTSGVH 
+Wisconsin_2005  -------------------------------------------------------------- 
+ _consrvd
+
+ _aln.pos            690       700       710       720       730       740
+4FQY_all        TFPAVLQSSGLYSLSSVVTVPSSSLGTQTYICNVNHKPSNTKVDKRVEP/SALTQPPAVSGT 
+Wisconsin_2005  -------------------------------------------------------------- 
+ _consrvd
+
+ _aln.pos          750       760       770       780       790       800
+4FQY_all        PGQRVTISCSGSDSNIGRRSVNWYQQFPGTAPKLLIYSNDQRPSVVPDRFSGSKSGTSASLA 
+Wisconsin_2005  -------------------------------------------------------------- 
+ _consrvd
+
+ _aln.pos        810       820       830       840       850       860
+4FQY_all        ISGLQSEDEAEYYCAAWDDSLKGAVFGGGTQLTVLPKAAPSVTLFPPSSEELQANKATLVCL 
+Wisconsin_2005  -------------------------------------------------------------- 
+ _consrvd
+
+ _aln.pos      870       880       890       900       910       920       930
+4FQY_all        ISDFYPGAVTVAWKADSSPVKAGVETTTPSKQSNNKYAASSYLSLTPEQWKSHRSYSCQVTH 
+Wisconsin_2005  -------------------------------------------------------------- 
+ _consrvd
+
+ _aln.pos              940
+4FQY_all        EGSTVEKTVAP 
+Wisconsin_2005  ----------- 
+ _consrvd
