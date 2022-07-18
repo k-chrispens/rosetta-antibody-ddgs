@@ -185,27 +185,27 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     pack_and_relax(original, pos, wt, repack_range, scorefxn)
     if output_pdb:
         original.dump_pdb("1_bound_unmutated.pdb")
-    bound_unmutated = scorefxn(original)
+    bound_unmutated = ddg_scorefxn(original)
 
     # Bound mutated
     pack_and_relax(mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         mutPose.dump_pdb("2_bound_mutated.pdb")
-    bound_mutated = scorefxn(mutPose)
+    bound_mutated = ddg_scorefxn(mutPose)
 
     # Unbound unmutated
     unbind(unbound_original, jump)
     pack_and_relax(unbound_original, pos, wt, repack_range, scorefxn)
     if output_pdb:
         unbound_original.dump_pdb("3_unbound_unmutated.pdb")
-    unbound_unmutated = scorefxn(unbound_original)
+    unbound_unmutated = ddg_scorefxn(unbound_original)
 
     # Unbound mutated
     unbind(unbound_mutPose, jump)
     pack_and_relax(unbound_mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         unbound_mutPose.dump_pdb("4_unbound_mutated.pdb")
-    unbound_mutated = scorefxn(unbound_mutPose)
+    unbound_mutated = ddg_scorefxn(unbound_mutPose)
 
     print("unbound_unmutated", unbound_unmutated)
     print("bound_unmutated", bound_unmutated)
@@ -218,7 +218,19 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 
 pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
-scorefxn = get_score_function()
+
+# need cartesian score function for minimization (if cart is chosen.)
+if values_dict["b"] and values_dict["c"]:
+    scorefxn = create_score_function("beta_nov16_cart.wts")
+elif values_dict["c"]:
+    scorefxn = create_score_function(
+        "ref2015_cart.wts")
+else:
+    scorefxn = get_score_function()
+
+# ddG score function should be regular, as the cart term can vary largely between structures.
+ddg_scorefxn = get_score_function()
+
 repack_range = int(values_dict["r"])  # Try 12, where did 8 come from?
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
 # then [30:38]. These were generated based on approx times I wanted to let them run.
