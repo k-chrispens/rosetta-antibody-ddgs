@@ -249,7 +249,7 @@ for pdb in pdbs:
         start = time.time()
         print("Mutations:", point["Mutations"])
         total = 0
-        for p in range(int(values_dict["p"]):
+        for p in range(int(values_dict["p"])):
             total += calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
         total = total / int(values_dict["p"])
         print("DDG: ", total)
