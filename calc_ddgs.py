@@ -16,7 +16,7 @@ import getopt, sys
 from pyrosetta import *
 
 args = sys.argv[1:]
-options = "rpbo:csa"
+options = "r:p:bo:csa"
 long_options = ["repack_range=", "rounds_packmin=",
                 "beta", "output_path=", "cartesian", "soft_rep", "all_repack"]
 values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
@@ -24,11 +24,9 @@ values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s
 try:
     # Parsing argument
     arguments, values = getopt.getopt(args, options, long_options)
-    
-    print("args: ", args) # FIXME
+ 
     # checking each argument
     for currentArgument, currentValue in arguments:
-        print("CHECK") # FIXME
         if currentArgument in ("-r", "--repack_range"):
             values_dict["r"] = currentValue
             print(f"Repack Range = {currentValue}")
@@ -60,10 +58,6 @@ try:
 except getopt.error as err:
     # output error, and return with an error code
     print(str(err))
-
-if values_dict["o"] == "./UNNAMED.csv":
-    print("SOMETHING BREAKING")
-    quit()
 
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
