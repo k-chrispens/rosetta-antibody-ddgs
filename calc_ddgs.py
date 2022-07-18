@@ -180,7 +180,6 @@ def unbind(pose, jump):
 
 def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 
-    scorefxn = get_score_function()  # ADJUST SFXN HERE
     # TESTING COPY VS CLONE
     mutPose = Pose()
     original = Pose()
