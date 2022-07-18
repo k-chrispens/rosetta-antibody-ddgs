@@ -1,11 +1,14 @@
-"""Calculating ddGs.
-REQUIRED - cmd line args: int repack_range, int packmin_ensemble_size, 
-flag beta (scorefunction), str path (to output), flag cartesian, flag soft_rep, flag all_repack
+"""Calculating ddGs. Adapted from Brian Petersen's new_ddg_unbind.py
+REQUIRED - cmd line args: int repack_range, int rounds_packmin, flag beta (scorefunction), 
+str path (to output), flag cartesian, flag soft_rep
 Author: Karson Chrispens"""
 
 import re
 import time
 import pandas as pd
+import math
+import matplotlib.pyplot as plt
+import random
 import numpy as np
 from pyrosetta.rosetta.core.select.movemap import *
 from pyrosetta.rosetta.core.select import *
@@ -16,19 +19,18 @@ import getopt, sys
 from pyrosetta import *
 
 args = sys.argv[1:]
-options = "rpbo:csa"
+options = "r:p:bo:cs"
 long_options = ["repack_range=", "rounds_packmin=",
-                "beta", "output_path=", "cartesian", "soft_rep", "all_repack"]
-values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
+                "beta", "output_path=", "cartesian", "soft_rep"]
+values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s": False}
 
 try:
     # Parsing argument
     arguments, values = getopt.getopt(args, options, long_options)
-    
-    print("args: ", args) # FIXME
+
     # checking each argument
     for currentArgument, currentValue in arguments:
-        print("CHECK") # FIXME
+
         if currentArgument in ("-r", "--repack_range"):
             values_dict["r"] = currentValue
             print(f"Repack Range = {currentValue}")
@@ -52,10 +54,6 @@ try:
         elif currentArgument in ("s", "--soft_rep"):
             values_dict["s"] = True
             print("Using soft_rep_design flag")
-
-        elif currentArgument in ("a", "--all_repack"):
-            values_dict["a"] = True
-            print("Repacking all residues")
 
 except getopt.error as err:
     # output error, and return with an error code
@@ -119,20 +117,15 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     tf.push_back(
         pyrosetta.rosetta.core.pack.task.operation.NoRepackDisulfides())
 
-    # LOCAL OR GLOBAL REPACKING
-    if not values_dict["a"]:
-        # Disable Packing
-        prevent_repacking_rlt = pyrosetta.rosetta.core.pack.task.operation.PreventRepackingRLT()
-        prevent_subset_repacking = pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
+    # Disable Packing
+    prevent_repacking_rlt = pyrosetta.rosetta.core.pack.task.operation.PreventRepackingRLT()
+    prevent_subset_repacking = pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
         prevent_repacking_rlt, nbr_selector, True)
-        tf.push_back(prevent_subset_repacking)
-        # Prevent Design
-        tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
-            pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_design))
-    else:
-        # Prevent Design
-        tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
-            pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_design))
+    tf.push_back(prevent_subset_repacking)
+
+    # Disable design
+    tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
+        pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_design))
 
     # Enable design (change the residues to the mutated residues)
     for i in range(len(posi)):
@@ -141,11 +134,10 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
         tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
             aa_to_design,  mut_posi[i]))
 
-    # Minimizes residues within repack range of mutations
     mmf = MoveMapFactory()
     mmf.add_bb_action(mm_enable, nbr_selector)
     mmf.add_chi_action(mm_enable, nbr_selector)
-    # mm = mmf.create_movemap_from_pose(pose) # ONLY NEEDED IF FAST RELAX
+    mm = mmf.create_movemap_from_pose(pose)
 
     packer = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(
         scorefxn)
@@ -159,8 +151,9 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     if values_dict["c"]:
         minmover.cartesian(True)
     
-    packer.apply(pose)
-    minmover.apply(pose)
+    for _ in range(int(values_dict["p"])):
+        packer.apply(pose)
+        minmover.apply(pose)
 
     # Fast Relax FIXME
     # fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
@@ -195,27 +188,27 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     pack_and_relax(original, pos, wt, repack_range, scorefxn)
     if output_pdb:
         original.dump_pdb("1_bound_unmutated.pdb")
-    bound_unmutated = ddg_scorefxn(original)
+    bound_unmutated = scorefxn(original)
 
     # Bound mutated
     pack_and_relax(mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         mutPose.dump_pdb("2_bound_mutated.pdb")
-    bound_mutated = ddg_scorefxn(mutPose)
+    bound_mutated = scorefxn(mutPose)
 
     # Unbound unmutated
     unbind(unbound_original, jump)
     pack_and_relax(unbound_original, pos, wt, repack_range, scorefxn)
     if output_pdb:
         unbound_original.dump_pdb("3_unbound_unmutated.pdb")
-    unbound_unmutated = ddg_scorefxn(unbound_original)
+    unbound_unmutated = scorefxn(unbound_original)
 
     # Unbound mutated
     unbind(unbound_mutPose, jump)
     pack_and_relax(unbound_mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         unbound_mutPose.dump_pdb("4_unbound_mutated.pdb")
-    unbound_mutated = ddg_scorefxn(unbound_mutPose)
+    unbound_mutated = scorefxn(unbound_mutPose)
 
     print("unbound_unmutated", unbound_unmutated)
     print("bound_unmutated", bound_unmutated)
@@ -228,19 +221,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 
 pdbs = data["#PDB"].unique()
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
-
-# need cartesian score function for minimization (if cart is chosen.)
-if values_dict["b"] and values_dict["c"]:
-    scorefxn = create_score_function("beta_nov16_cart.wts")
-elif values_dict["c"]:
-    scorefxn = create_score_function(
-        "ref2015_cart.wts")
-else:
-    scorefxn = get_score_function()
-
-# ddG score function should be regular, as the cart term can vary largely between structures.
-ddg_scorefxn = get_score_function()
-
+scorefxn = get_score_function()
 repack_range = int(values_dict["r"])  # Try 12, where did 8 come from?
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
 # then [30:38]. These were generated based on approx times I wanted to let them run.
@@ -270,16 +251,12 @@ for pdb in pdbs:
 
         start = time.time()
         print("Mutations:", point["Mutations"])
-        total = 0
-        for p in range(int(values_dict["p"])):
-            total += calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
-        total = total / int(values_dict["p"])
+        total = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
         print("DDG: ", total)
         df = df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
-        print("Avg time per ensemble member:", (end-start)/int(values_dict["p"]), "seconds")
         count += 1
         if count % 20 == 0:
             df.to_csv(values_dict["o"], index=False)
