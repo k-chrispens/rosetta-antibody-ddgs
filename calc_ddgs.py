@@ -262,10 +262,10 @@ for pdb in pdbs:
         print("Mutations:", point["Mutations"])
         total = 0
         for i in range(int(values_dict["p"])):
-            print("HI")
             total = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
         # produce arithmetic mean of ensemble of packed structures
-        print("DDG: ", total / int(values_dict["p"]))
+        total = total / int(values_dict["p"])
+        print("DDG: ", total)
         df = df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
         end = time.time()
