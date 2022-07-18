@@ -257,7 +257,7 @@ for pdb in pdbs:
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
-        print("Avg time per ensemble member:", (end-start)/int(values_dict["p"]), "seconds"
+        print("Avg time per ensemble member:", (end-start)/int(values_dict["p"]), "seconds")
         count += 1
         if count % 20 == 0:
             df.to_csv(values_dict["o"], index=False)
