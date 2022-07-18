@@ -12,38 +12,30 @@ from pyrosetta.rosetta.core.select import *
 from pyrosetta.rosetta.protocols import *
 from pyrosetta.rosetta.core.pack.task import *
 from pyrosetta.rosetta.core.import_pose import *
-import getopt
-import sys
+import getopt, sys
 from pyrosetta import *
-
-ONE_LETTER = {'VAL': 'V', 'ILE': 'I', 'LEU': 'L', 'GLU': 'E', 'GLN': 'Q',
-              'ASP': 'D', 'ASN': 'N', 'HIS': 'H', 'TRP': 'W', 'PHE': 'F', 'TYR': 'Y',
-              'ARG': 'R', 'LYS': 'K', 'SER': 'S', 'THR': 'T', 'MET': 'M', 'ALA': 'A',
-              'GLY': 'G', 'PRO': 'P', 'CYS': 'C'}
-
-THREE_LETTER = {value: key for key, value in ONE_LETTER.items()}
 
 args = sys.argv[1:]
 options = "rpbo:csa"
-long_options = ["repack_range", "packmin_size",
+long_options = ["repack_range=", "rounds_packmin=",
                 "beta", "output_path=", "cartesian", "soft_rep", "all_repack"]
-values_dict = {"r": 12, "p": 1, "b": False,
-               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
+values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
 
 try:
     # Parsing argument
     arguments, values = getopt.getopt(args, options, long_options)
-
+    
+    print("args: ", args) # FIXME
     # checking each argument
     for currentArgument, currentValue in arguments:
-
+        print("CHECK") # FIXME
         if currentArgument in ("-r", "--repack_range"):
             values_dict["r"] = currentValue
             print(f"Repack Range = {currentValue}")
 
-        elif currentArgument in ("-p", "--packmin_size"):
+        elif currentArgument in ("-p", "--rounds_packmin"):
             values_dict["p"] = currentValue
-            print(f"Pack and Minimization Ensemble Size = {currentValue}")
+            print(f"Rounds of Pack and Minimization = {currentValue}")
 
         elif currentArgument in ("-b", "--beta"):
             values_dict["b"] = True
@@ -69,10 +61,14 @@ except getopt.error as err:
     # output error, and return with an error code
     print(str(err))
 
+if values_dict["o"] == "./UNNAMED.csv":
+    print("SOMETHING BREAKING")
+    quit()
+
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 # INIT
-# NOTE: Why use soft_rep_design? Because it helps prevent high scores when there are many constraints
+# NOTE: Why use soft_rep_design?
 if values_dict["b"] and values_dict["s"]:
     init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 elif values_dict["b"]:
@@ -83,9 +79,8 @@ else:
     init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
 
 
-def packmin(pose, posi, amino, repack_range, scorefxn):
+def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
-    print("HI")
     mut_posi = []
     mut_posi.append(
         pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector())
@@ -131,7 +126,11 @@ def packmin(pose, posi, amino, repack_range, scorefxn):
         prevent_subset_repacking = pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
         prevent_repacking_rlt, nbr_selector, True)
         tf.push_back(prevent_subset_repacking)
+        # Prevent Design
+        tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
+            pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_design))
     else:
+        # Prevent Design
         tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
             pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_design))
 
@@ -142,10 +141,11 @@ def packmin(pose, posi, amino, repack_range, scorefxn):
         tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
             aa_to_design,  mut_posi[i]))
 
+    # Minimizes residues within repack range of mutations
     mmf = MoveMapFactory()
     mmf.add_bb_action(mm_enable, nbr_selector)
     mmf.add_chi_action(mm_enable, nbr_selector)
-    mm = mmf.create_movemap_from_pose(pose)
+    # mm = mmf.create_movemap_from_pose(pose) # ONLY NEEDED IF FAST RELAX
 
     packer = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(
         scorefxn)
@@ -158,9 +158,17 @@ def packmin(pose, posi, amino, repack_range, scorefxn):
 
     if values_dict["c"]:
         minmover.cartesian(True)
-    print("HI")
+    
     packer.apply(pose)
     minmover.apply(pose)
+
+    # Fast Relax FIXME
+    # fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
+    # fr.constrain_relax_to_start_coords(True)
+    # fr.set_task_factory(tf)
+    # fr.set_movemap(mm)
+    # fr.apply(pose)
+
 
 def unbind(pose, jump):
     STEP_SIZE = 100
@@ -169,8 +177,11 @@ def unbind(pose, jump):
     trans_mover.step_size(STEP_SIZE)
     trans_mover.apply(pose)
 
+
 def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
 
+    scorefxn = get_score_function()  # ADJUST SFXN HERE
+    # TESTING COPY VS CLONE
     mutPose = Pose()
     original = Pose()
     unbound_mutPose = Pose()
@@ -181,27 +192,27 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     unbound_original.detached_copy(pose)
 
     # Bound unmutated
-    packmin(original, pos, wt, repack_range, scorefxn)
+    pack_and_relax(original, pos, wt, repack_range, scorefxn)
     if output_pdb:
         original.dump_pdb("1_bound_unmutated.pdb")
     bound_unmutated = ddg_scorefxn(original)
 
     # Bound mutated
-    packmin(mutPose, pos, mut, repack_range, scorefxn)
+    pack_and_relax(mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         mutPose.dump_pdb("2_bound_mutated.pdb")
     bound_mutated = ddg_scorefxn(mutPose)
 
     # Unbound unmutated
     unbind(unbound_original, jump)
-    packmin(unbound_original, pos, wt, repack_range, scorefxn)
+    pack_and_relax(unbound_original, pos, wt, repack_range, scorefxn)
     if output_pdb:
         unbound_original.dump_pdb("3_unbound_unmutated.pdb")
     unbound_unmutated = ddg_scorefxn(unbound_original)
 
     # Unbound mutated
     unbind(unbound_mutPose, jump)
-    packmin(unbound_mutPose, pos, mut, repack_range, scorefxn)
+    pack_and_relax(unbound_mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         unbound_mutPose.dump_pdb("4_unbound_mutated.pdb")
     unbound_mutated = ddg_scorefxn(unbound_mutPose)
@@ -229,7 +240,6 @@ else:
 
 # ddG score function should be regular, as the cart term can vary largely between structures.
 ddg_scorefxn = get_score_function()
-
 
 repack_range = int(values_dict["r"])  # Try 12, where did 8 come from?
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
@@ -261,97 +271,17 @@ for pdb in pdbs:
         start = time.time()
         print("Mutations:", point["Mutations"])
         total = 0
-        for i in range(int(values_dict["p"])):
-            total = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
-        # produce arithmetic mean of ensemble of packed structures
+        for p in range(int(values_dict["p"])):
+            total += calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
         total = total / int(values_dict["p"])
         print("DDG: ", total)
         df = df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                         "Mut_AA": mut, "DDG": total}, ignore_index=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
-        print("Avg time per member of ensemble:",
-              (end-start)/int(values_dict["p"]), "seconds")
+        print("Avg time per ensemble member:", (end-start)/int(values_dict["p"]), "seconds")
         count += 1
         if count % 20 == 0:
             df.to_csv(values_dict["o"], index=False)
 
 df.to_csv(values_dict["o"], index=False)
-
-# def simple_packmin(pose, pos, mut, repack_range, sfxn):
-#     # mutater = simple_moves.MutateResidue()
-#     mut_selectors = []
-#     for p in pos:
-#         selector = pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector()
-#         selector.set_index(p)
-#         print(pyrosetta.rosetta.core.select.get_residues_from_subset(
-#             selector.apply(pose)))
-#         mut_selectors.append(selector)
-#         # mutater.set_target(m)
-#         # mutater.set_res_name(THREE_LETTER[m])
-#         # print(mutater.show())
-#         # print(mutater.target())
-#         # print(mutater.info)
-#         # mutater.apply(pose)
-
-#     mut_select = pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector()
-#     for i in mut_selectors:
-#         mut_select = pyrosetta.rosetta.core.select.residue_selector.OrResidueSelector(
-#                 mut_select, i)
-
-#     nbr_selector = pyrosetta.rosetta.core.select.residue_selector.NeighborhoodResidueSelector()
-#     nbr_selector.set_distance(repack_range)
-#     nbr_selector.set_focus_selector(mut_select)
-#     nbr_selector.set_include_focus_in_subset(True)
-
-#     # This is kinda jank
-#     all_selector = pyrosetta.rosetta.core.select.residue_selector.NeighborhoodResidueSelector()
-#     all_selector.set_distance(200)
-#     all_selector.set_focus_selector(mut_select)
-#     all_selector.set_include_focus_in_subset(True)
-
-#     not_mut = pyrosetta.rosetta.core.select.residue_selector.NotResidueSelector(
-#         mut_select)
-
-#     tf = TaskFactory()
-#     tf.push_back(operation.InitializeFromCommandline())
-#     tf.push_back(operation.IncludeCurrent())
-#     tf.push_back(operation.NoRepackDisulfides())
-
-#     # LOCAL OR GLOBAL REPACKING
-#     if not values_dict["a"]:
-#         prevent_repacking_rlt = operation.PreventRepackingRLT()
-#         no_repack_nonmut = operation.OperateOnResidueSubset(
-#             prevent_repacking_rlt, not_mut)
-#         tf.push_back(no_repack_nonmut)
-#     else:
-#         tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
-#             pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_mut))
-
-#     # Enable design (change the residues to the mutated residues)
-#     for i in range(len(pos)):
-#         aa_to_design = pyrosetta.rosetta.core.pack.task.operation.RestrictAbsentCanonicalAASRLT()
-#         aa_to_design.aas_to_keep(mut[i])
-#         tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
-#             aa_to_design, mut_selectors[i]))
-
-#     mmf = MoveMapFactory()
-#     mmf.add_bb_action(mm_enable, nbr_selector)  # Allow backbone minimization
-#     mmf.add_chi_action(mm_enable, nbr_selector)  # Allow sidechain minimization
-
-#     if values_dict["c"]:
-#         mmf.set_cartesian(setting=True)
-#     else:
-#         mmf.set_cartesian(setting=False)
-
-#     packer = minimization_packing.PackRotamersMover(
-#         ddg_scorefxn)  # want this to not use cartesian scorefunction
-#     packer.task_factory(tf)
-#     minmover = minimization_packing.MinMover()
-#     minmover.score_function(sfxn)
-#     minmover.movemap_factory(mmf)
-#     minmover.max_iter(2000)
-#     minmover.tolerance(0.00001)
-
-#     packer.apply(pose)
-#     minmover.apply(pose)
