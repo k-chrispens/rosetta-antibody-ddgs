@@ -99,6 +99,13 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     nbr_selector.set_distance(repack_range)
     nbr_selector.set_focus_selector(comb_select)
     nbr_selector.set_include_focus_in_subset(True)
+    
+    # Selecting only residues on current chain (TESTING)
+    chain_selector = pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(posi[0]))
+    for pos in posi:
+        chain_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(pos))
+
+    nbr_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, nbr_selector)
     # print(pyrosetta.rosetta.core.select.get_residues_from_subset(nbr_selector.apply(pose)))
 
     # Select No Design Area
@@ -276,5 +283,6 @@ for pdb in pdbs:
         count += 1
         if count % 20 == 0:
             df.to_csv(values_dict["o"], index=False)
+            print("Wrote to csv.", flush=True)
 
 df.to_csv(values_dict["o"], index=False)
