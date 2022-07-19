@@ -100,7 +100,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     nbr_selector.set_focus_selector(comb_select)
     nbr_selector.set_include_focus_in_subset(True)
     
-    # Selecting only residues on current chain (TESTING)
+    # Selecting only residues on current chain (restricts repacking to antibody only, assumes antigen is not as important)
     chain_selector = pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(posi[0]))
     for pos in posi:
         chain_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(pos)))
@@ -279,7 +279,7 @@ for pdb in pdbs:
         total = total / int(values_dict["p"])
         rmsd_total = rmsd_total / int(values_dict["p"])
         print("DDG: ", total)
-        print("RMSD: ", rmsd_total
+        print("RMSD: ", rmsd_total)
         df = pd.concat([df, pd.DataFrame({"#PDB": pdb, "Position": pos, "WT_AA": wt,
                                      "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True)
         end = time.time()
