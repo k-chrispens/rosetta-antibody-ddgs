@@ -62,7 +62,7 @@ except getopt.error as err:
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 # INIT
-# NOTE: Why use soft_rep_design?
+# NOTE: Why use soft_rep_design? Kellogg et al. 2011
 if values_dict["b"] and values_dict["s"]:
     init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 elif values_dict["b"]:
@@ -200,6 +200,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     if output_pdb:
         mutPose.dump_pdb("2_bound_mutated.pdb")
     bound_mutated = ddg_scorefxn(mutPose)
+    rmsd_mutated = all_atom_rmsd(original, mutPose)
 
     # Unbound unmutated
     unbind(unbound_original, jump)
@@ -221,7 +222,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     print("bound_mutated", bound_mutated)
     ddG = (bound_mutated - unbound_mutated) - \
         (bound_unmutated - unbound_unmutated)
-    return ddG
+    return ddG, rmsd_mutated
 
 
 pdbs = data["#PDB"].unique()
@@ -239,7 +240,7 @@ else:
 # ddG score function should be regular, as the cart term can vary largely between structures.
 ddg_scorefxn = get_score_function()
 
-repack_range = int(values_dict["r"])  # Try 12, where did 8 come from?
+repack_range = int(values_dict["r"])  # Try 12, where did 8 come from? It came from the relax 8
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
 # then [30:38]. These were generated based on approx times I wanted to let them run.
 count = 0
@@ -270,12 +271,17 @@ for pdb in pdbs:
         start = time.time()
         print("Mutations:", point["Mutations"])
         total = 0
+        rmsd_total = 0
         for p in range(int(values_dict["p"])):
-            total += calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
+            ddg, rmsd = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
+            total += ddg
+            rmsd_total += rmsd
         total = total / int(values_dict["p"])
+        rmsd_total = rmsd_total / int(values_dict["p"])
         print("DDG: ", total)
-        df = df.append({"#PDB": pdb, "Position": pos, "WT_AA": wt,
-                        "Mut_AA": mut, "DDG": total}, ignore_index=True)
+        print("RMSD: ", rmsd_total
+        df = pd.concat([df, pd.DataFrame({"#PDB": pdb, "Position": pos, "WT_AA": wt,
+                                     "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
         print("Avg time per ensemble member:", (end-start)/int(values_dict["p"]), "seconds")

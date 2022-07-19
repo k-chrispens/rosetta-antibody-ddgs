@@ -1,1 +1,0 @@
-kyroyo@DESKTOP-T6FOKKR.1080
