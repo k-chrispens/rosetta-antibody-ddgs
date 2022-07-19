@@ -103,15 +103,13 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     # Selecting only residues on current chain (TESTING)
     chain_selector = pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(posi[0]))
     for pos in posi:
-        chain_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(pos))
+        chain_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(pos)))
 
     nbr_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, nbr_selector)
-    # print(pyrosetta.rosetta.core.select.get_residues_from_subset(nbr_selector.apply(pose)))
 
     # Select No Design Area
     not_design = pyrosetta.rosetta.core.select.residue_selector.NotResidueSelector(
         comb_select)
-    # print(pyrosetta.rosetta.core.select.get_residues_from_subset(not_design.apply(pose)))
 
     tf = pyrosetta.rosetta.core.pack.task.TaskFactory()
     tf.push_back(
@@ -249,6 +247,7 @@ count = 0
 for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
     points = points.loc[points["Interface?"] == True]
+    points = points.loc[points["LD"] == 1] # TESTING FIXME
     pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb")
     for index, point in points.iterrows():
         muts = re.split(";", point["Mutations"])
