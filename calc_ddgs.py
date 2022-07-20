@@ -1,30 +1,26 @@
-"""Calculating ddGs.
-REQUIRED - cmd line args: int repack_range, int packmin_ensemble_size, 
-flag beta (scorefunction), str path (to output), flag cartesian, flag soft_rep, flag all_repack
-Author: Karson Chrispens"""
-
+from pyrosetta import *
+from pyrosetta.rosetta.core.import_pose import *
+from pyrosetta.rosetta.protocols import *
+from pyrosetta.rosetta import *
+from pyrosetta.rosetta.core.select.movemap import *
 import re
 import time
-import pandas as pd
 import numpy as np
-from pyrosetta.rosetta.core.select.movemap import *
-from pyrosetta.rosetta.core.select import *
-from pyrosetta.rosetta.protocols import *
-from pyrosetta.rosetta.core.pack.task import *
-from pyrosetta.rosetta.core.import_pose import *
-import getopt, sys
-from pyrosetta import *
+import pandas as pd
+import getopt
+import sys
 
 args = sys.argv[1:]
 options = "r:p:bo:csa"
 long_options = ["repack_range=", "rounds_packmin=",
                 "beta", "output_path=", "cartesian", "soft_rep", "all_repack"]
-values_dict = {"r": 12, "p": 2, "b": False, "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
+values_dict = {"r": 12, "p": 2, "b": False,
+               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
 
 try:
     # Parsing argument
     arguments, values = getopt.getopt(args, options, long_options)
- 
+
     # checking each argument
     for currentArgument, currentValue in arguments:
         if currentArgument in ("-r", "--repack_range"):
@@ -71,6 +67,38 @@ elif values_dict["s"]:
     init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 else:
     init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
+print(values_dict)
+data = pd.read_csv("./raw_datasets/use_this_data.csv")
+
+
+def backrub_ensemble_gen(pose, nbr_selector, mmf, scorefxn):
+
+    backrubber = backrub.BackrubMover()
+    backrubber.set_movemap_factory(mmf)
+    backrubber.min_atoms(3)
+    backrubber.max_atoms(12)
+
+    backrub_protocol = backrub.BackrubProtocol(mover=backrubber)
+    backrub_protocol.register_options()
+    quit()
+
+    # GMC = pyrosetta.rosetta.protocols.monte_carlo.GenericMonteCarloMover(mover=backrubber, scorefxn=scorefxn, maxtrials=50000, temperature=1.2, max_accepted_trials=)
+    # GMC.set_mover(backrub)
+    # GMC.set_scorefxn(scorefxn)
+    # GMC.set_maxtrials(500)
+    # GMC.set_temperature(1.0)
+    # GMC.set_preapply(False)
+    # GMC.set_recover_low(True)
+    # GMC.apply(pose)
+
+    # ensemble = []
+    # for _ in range(values_dict["p"]):
+    #     clone = Pose()
+    #     clone.detached_copy(pose)
+    #     backrubber.apply(clone)
+    #     ensemble.append(clone)
+
+    # return ensemble
 
 
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
@@ -99,13 +127,16 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     nbr_selector.set_distance(repack_range)
     nbr_selector.set_focus_selector(comb_select)
     nbr_selector.set_include_focus_in_subset(True)
-    
-    # Selecting only residues on current chain (restricts repacking to antibody only, assumes antigen is not as important)
-    chain_selector = pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(posi[0]))
-    for pos in posi:
-        chain_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(pos)))
 
-    nbr_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(chain_selector, nbr_selector)
+    # Selecting only residues on current chain (restricts repacking to antibody only, assumes antigen is not as important)
+    chain_selector = pyrosetta.rosetta.core.select.residue_selector.ChainSelector(
+        pose.pdb_info().chain(posi[0]))
+    for pos in posi:
+        chain_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(
+            chain_selector, pyrosetta.rosetta.core.select.residue_selector.ChainSelector(pose.pdb_info().chain(pos)))
+
+    nbr_selector = pyrosetta.rosetta.core.select.residue_selector.AndResidueSelector(
+        chain_selector, nbr_selector)
 
     # Select No Design Area
     not_design = pyrosetta.rosetta.core.select.residue_selector.NotResidueSelector(
@@ -123,7 +154,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
         # Disable Packing
         prevent_repacking_rlt = pyrosetta.rosetta.core.pack.task.operation.PreventRepackingRLT()
         prevent_subset_repacking = pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
-        prevent_repacking_rlt, nbr_selector, True)
+            prevent_repacking_rlt, nbr_selector, True)
         tf.push_back(prevent_subset_repacking)
         # Prevent Design
         tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
@@ -146,18 +177,20 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     mmf.add_chi_action(mm_enable, nbr_selector)
     # mm = mmf.create_movemap_from_pose(pose) # ONLY NEEDED IF FAST RELAX
 
+    backrub_ensemble_gen(pose, nbr_selector, mmf)
+
     packer = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(
         scorefxn)
     packer.task_factory(tf)
     minmover = pyrosetta.rosetta.protocols.minimization_packing.MinMover()
     minmover.score_function(scorefxn)
     minmover.movemap_factory(mmf)
-    minmover.max_iter(2000)
-    minmover.tolerance(0.00001)
+    minmover.max_iter(5000)
+    minmover.tolerance(0.000001)
 
     if values_dict["c"]:
         minmover.cartesian(True)
-    
+
     packer.apply(pose)
     minmover.apply(pose)
 
@@ -186,8 +219,6 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     unbound_original = Pose()
     mutPose.detached_copy(pose)
     original.detached_copy(pose)
-    unbound_mutPose.detached_copy(pose)
-    unbound_original.detached_copy(pose)
 
     # Bound unmutated
     pack_and_relax(original, pos, wt, repack_range, scorefxn)
@@ -202,16 +233,19 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     bound_mutated = ddg_scorefxn(mutPose)
     rmsd_mutated = all_atom_rmsd(original, mutPose)
 
+    unbound_original.detached_copy(original)
+    unbound_mutPose.detached_copy(mutPose)
+
     # Unbound unmutated
     unbind(unbound_original, jump)
-    pack_and_relax(unbound_original, pos, wt, repack_range, scorefxn)
+    # pack_and_relax(unbound_original, pos, wt, repack_range, scorefxn) # flex-ddg does NOT repack unbound poses
     if output_pdb:
         unbound_original.dump_pdb("3_unbound_unmutated.pdb")
     unbound_unmutated = ddg_scorefxn(unbound_original)
 
     # Unbound mutated
     unbind(unbound_mutPose, jump)
-    pack_and_relax(unbound_mutPose, pos, mut, repack_range, scorefxn)
+    # pack_and_relax(unbound_mutPose, pos, mut, repack_range, scorefxn) # flex-ddg does NOT repack unbound poses
     if output_pdb:
         unbound_mutPose.dump_pdb("4_unbound_mutated.pdb")
     unbound_mutated = ddg_scorefxn(unbound_mutPose)
@@ -240,7 +274,8 @@ else:
 # ddG score function should be regular, as the cart term can vary largely between structures.
 ddg_scorefxn = get_score_function()
 
-repack_range = int(values_dict["r"])  # Try 12, where did 8 come from? It came from the relax 8
+# Try 12, where did 8 come from? It came from the relax 8
+repack_range = int(values_dict["r"])
 # TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
 # then [30:38]. These were generated based on approx times I wanted to let them run.
 count = 0
@@ -248,7 +283,7 @@ count = 0
 for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
     points = points.loc[points["Interface?"] == True]
-    points = points.loc[points["LD"] == 1] # TESTING FIXME
+    points = points.loc[points["LD"] == 1]  # TESTING FIXME
     pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb")
     for index, point in points.iterrows():
         muts = re.split(";", point["Mutations"])
@@ -281,10 +316,11 @@ for pdb in pdbs:
         print("DDG: ", total)
         print("RMSD: ", rmsd_total)
         df = pd.concat([df, pd.DataFrame({"#PDB": pdb, "Position": pos, "WT_AA": wt,
-                                     "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True)
+                                          "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
-        print("Avg time per ensemble member:", (end-start)/int(values_dict["p"]), "seconds")
+        print("Avg time per ensemble member:",
+              (end-start)/int(values_dict["p"]), "seconds")
         count += 1
         if count % 20 == 0:
             df.to_csv(values_dict["o"], index=False)
