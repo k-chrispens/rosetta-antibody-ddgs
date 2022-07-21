@@ -8,6 +8,7 @@ from pyrosetta.rosetta.core.import_pose import *
 from pyrosetta.rosetta.protocols import *
 from pyrosetta.rosetta import *
 from pyrosetta.rosetta.core.select.movemap import *
+from pyrosetta.rosetta.core.scoring import *
 import re
 import time
 import numpy as np
@@ -65,14 +66,14 @@ data = pd.read_csv("./raw_datasets/use_this_data.csv")
 # INIT
 # NOTE: Why use soft_rep_design? Kellogg et al. 2011
 if values_dict["b"] and values_dict["s"]:
-    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
+    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
 elif values_dict["b"]:
-    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
+    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
 elif values_dict["s"]:
-    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
+    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
 else:
     # FIXME put backrub flags here  -mc_kt 1.2 -nstruct 50 (?) -backrub:ntrials 50000
-    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000")
+    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
 print(values_dict)
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
@@ -324,7 +325,7 @@ for pdb in pdbs:
         print("Mutations:", point["Mutations"])
         total = 0
         rmsd_total = 0
-        for p in range(int(values_dict["p"])):
+        for _ in range(int(values_dict["p"])):
             ddg, rmsd = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
             total += ddg
             rmsd_total += rmsd
