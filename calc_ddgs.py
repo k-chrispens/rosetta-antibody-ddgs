@@ -1,3 +1,8 @@
+"""Calculating ddGs.
+REQUIRED - cmd line args: int repack_range, int packmin_ensemble_size, 
+flag beta (scorefunction), str path (to output), flag cartesian, flag soft_rep, flag all_repack
+Author: Karson Chrispens"""
+
 from pyrosetta import *
 from pyrosetta.rosetta.core.import_pose import *
 from pyrosetta.rosetta.protocols import *
@@ -14,7 +19,7 @@ args = sys.argv[1:]
 options = "r:p:bo:csa"
 long_options = ["repack_range=", "rounds_packmin=",
                 "beta", "output_path=", "cartesian", "soft_rep", "all_repack"]
-values_dict = {"r": 12, "p": 2, "b": False,
+values_dict = {"r": 12, "p": 1, "b": False,
                "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
 
 try:
@@ -60,27 +65,35 @@ data = pd.read_csv("./raw_datasets/use_this_data.csv")
 # INIT
 # NOTE: Why use soft_rep_design? Kellogg et al. 2011
 if values_dict["b"] and values_dict["s"]:
-    init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
+    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 elif values_dict["b"]:
-    init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
+    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
 elif values_dict["s"]:
-    init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
+    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all")
 else:
-    init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all")
+    # FIXME put backrub flags here  -mc_kt 1.2 -nstruct 50 (?) -backrub:ntrials 50000
+    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000")
 print(values_dict)
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 
-def backrub_ensemble_gen(pose, nbr_selector, mmf, scorefxn):
-
+# TESTING
+def backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn):
+    
+    start = time.time()
     backrubber = backrub.BackrubMover()
+    backrubber.init_with_options()
     backrubber.set_movemap_factory(mmf)
-    backrubber.min_atoms(3)
-    backrubber.max_atoms(12)
+    backrubber.set_min_atoms(3)
+    backrubber.set_max_atoms(12)
 
-    backrub_protocol = backrub.BackrubProtocol(mover=backrubber)
-    backrub_protocol.register_options()
-    quit()
+    backrub_protocol = backrub.BackrubProtocol()
+    backrub_protocol.set_backrub_mover(backrubber)
+    backrub_protocol.set_taskfactory(tf)
+    
+    backrub_protocol.apply(pose)
+    end = time.time()
+    print("Backrub time: ", end-start, "seconds")
 
     # GMC = pyrosetta.rosetta.protocols.monte_carlo.GenericMonteCarloMover(mover=backrubber, scorefxn=scorefxn, maxtrials=50000, temperature=1.2, max_accepted_trials=)
     # GMC.set_mover(backrub)
@@ -173,20 +186,24 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
     # Minimizes residues within repack range of mutations
     mmf = MoveMapFactory()
-    mmf.add_bb_action(mm_enable, nbr_selector)
+    mmf.add_bb_action(mm_enable, nbr_selector) # this was turned off for minimization in flex ddg I think FIXME
     mmf.add_chi_action(mm_enable, nbr_selector)
     # mm = mmf.create_movemap_from_pose(pose) # ONLY NEEDED IF FAST RELAX
 
-    backrub_ensemble_gen(pose, nbr_selector, mmf)
+    # BACKRUBBING
+    backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn)
 
     packer = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(
         scorefxn)
     packer.task_factory(tf)
+    
+    mmf.add_bb_action(mm_disable, nbr_selector) # disabling after backrub FIXME
+    
     minmover = pyrosetta.rosetta.protocols.minimization_packing.MinMover()
     minmover.score_function(scorefxn)
     minmover.movemap_factory(mmf)
-    minmover.max_iter(5000)
-    minmover.tolerance(0.000001)
+    minmover.max_iter(2000) # apparently 5000 was used in flex ddg FIXME
+    minmover.tolerance(0.00001) # apparently 0.000001 was used in flex ddg FIXME
 
     if values_dict["c"]:
         minmover.cartesian(True)
@@ -204,7 +221,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
 def unbind(pose, jump):
     STEP_SIZE = 100
-    # JUMP WILL NEED TO ADJUST FOR EACH POSE.
+    # JUMP NOTED FOR EACH POSE MANUALLY
     trans_mover = rigid.RigidBodyTransMover(pose, jump)
     trans_mover.step_size(STEP_SIZE)
     trans_mover.apply(pose)
