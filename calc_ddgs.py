@@ -179,27 +179,36 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
         tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
             pyrosetta.rosetta.core.pack.task.operation.RestrictToRepackingRLT(), not_design))
 
+    tf_mut = tf.clone()
     # Enable design (change the residues to the mutated residues)
     for i in range(len(posi)):
         aa_to_design = pyrosetta.rosetta.core.pack.task.operation.RestrictAbsentCanonicalAASRLT()
         aa_to_design.aas_to_keep(amino[i])
-        tf.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
+        tf_mut.push_back(pyrosetta.rosetta.core.pack.task.operation.OperateOnResidueSubset(
             aa_to_design,  mut_posi[i]))
 
     # Minimizes residues within repack range of mutations
     mmf = MoveMapFactory()
     mmf.add_bb_action(mm_enable, nbr_selector) # this was turned off for minimization in flex ddg I think FIXME
     mmf.add_chi_action(mm_enable, nbr_selector)
+    
     # mm = mmf.create_movemap_from_pose(pose) # ONLY NEEDED IF FAST RELAX
 
     # BACKRUBBING
     backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn)
+    mutPose = Pose()
+    mutPose.detached_copy(pose)
 
-    packer = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(
+    packer_mut = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(
         scorefxn)
-    packer.task_factory(tf)
-    
-    mmf.add_bb_action(mm_disable, nbr_selector) # disabling after backrub FIXME
+    packer_wt = pyrosetta.rosetta.protocols.minimization_packing.PackRotamersMover(
+        scorefxn)
+    packer_mut.task_factory(tf_mut)
+    packer_wt.task_factory(tf)
+
+    # Want global minimization after backrub
+    mmf.all_bb(True)
+    mmf.all_chi(True)
     
     minmover = pyrosetta.rosetta.protocols.minimization_packing.MinMover()
     minmover.score_function(scorefxn)
@@ -211,15 +220,12 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     if values_dict["c"]:
         minmover.cartesian(True)
 
-    packer.apply(pose)
+    packer_wt.apply(pose)
+    packer_mut.apply(mutPose)
     minmover.apply(pose)
+    minmover.apply(mutPose)
 
-    # Fast Relax FIXME
-    # fr = pyrosetta.rosetta.protocols.relax.FastRelax(scorefxn_in = scorefxn, standard_repeats = 2)
-    # fr.constrain_relax_to_start_coords(True)
-    # fr.set_task_factory(tf)
-    # fr.set_movemap(mm)
-    # fr.apply(pose)
+    return pose, mutPose
 
 
 def unbind(pose, jump):
@@ -241,13 +247,12 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     original.detached_copy(pose)
 
     # Bound unmutated
-    pack_and_relax(original, pos, wt, repack_range, scorefxn)
+    original, mutPose = pack_and_relax(mutPose, pos, mut, repack_range, scorefxn)    
     if output_pdb:
         original.dump_pdb("1_bound_unmutated.pdb")
     bound_unmutated = ddg_scorefxn(original)
 
     # Bound mutated
-    pack_and_relax(mutPose, pos, mut, repack_range, scorefxn)
     if output_pdb:
         mutPose.dump_pdb("2_bound_mutated.pdb")
     bound_mutated = ddg_scorefxn(mutPose)
