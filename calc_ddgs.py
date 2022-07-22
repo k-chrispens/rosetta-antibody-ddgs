@@ -20,7 +20,7 @@ args = sys.argv[1:]
 options = "r:p:bo:csa"
 long_options = ["repack_range=", "rounds_packmin=",
                 "beta", "output_path=", "cartesian", "soft_rep", "all_repack"]
-values_dict = {"r": 12, "p": 1, "b": False,
+values_dict = {"r": 8, "p": 1, "b": False,
                "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
 
 try:
