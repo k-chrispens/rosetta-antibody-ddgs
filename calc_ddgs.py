@@ -72,7 +72,7 @@ elif values_dict["b"]:
 elif values_dict["s"]:
     pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
 else:
-    # FIXME put backrub flags here  -mc_kt 1.2 -nstruct 50 (?) -backrub:ntrials 50000
+    # FIXME put backrub flags here  -mc_kt 1.2 -nstruct 50 (only for use with job distributor) -backrub:ntrials 50000
     pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
 print(values_dict)
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
@@ -81,6 +81,7 @@ data = pd.read_csv("./raw_datasets/use_this_data.csv")
 # TESTING
 def backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn):
     
+    print("hello")
     start = time.time()
     backrubber = backrub.BackrubMover()
     backrubber.init_with_options()
@@ -205,6 +206,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     minmover.movemap_factory(mmf)
     minmover.max_iter(2000) # apparently 5000 was used in flex ddg FIXME
     minmover.tolerance(0.00001) # apparently 0.000001 was used in flex ddg FIXME
+    minmover.abs_score_convergence_threshold(1.0)
 
     if values_dict["c"]:
         minmover.cartesian(True)
