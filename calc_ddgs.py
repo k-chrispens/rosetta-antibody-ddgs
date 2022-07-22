@@ -1,6 +1,7 @@
 """Calculating ddGs.
-REQUIRED - cmd line args: int repack_range, int packmin_ensemble_size, 
-flag beta (scorefunction), str path (to output), flag cartesian, flag soft_rep, flag all_repack
+REQUIRED - cmd line args: int repack_range, int backrub_ensemble_size, 
+flag beta (scorefunction), str path (to output), flag cartesian, 
+flag soft_rep, flag all_repack, str pdbs (comma-separated)
 Author: Karson Chrispens"""
 
 from pyrosetta import *
@@ -17,11 +18,11 @@ import getopt
 import sys
 
 args = sys.argv[1:]
-options = "r:p:bo:csa"
-long_options = ["repack_range=", "rounds_packmin=",
-                "beta", "output_path=", "cartesian", "soft_rep", "all_repack"]
+options = "r:p:bo:csan:"
+long_options = ["repack_range=", "backrub=",
+                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs="]
 values_dict = {"r": 8, "p": 1, "b": False,
-               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False}
+               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all"}
 
 try:
     # Parsing argument
@@ -33,9 +34,9 @@ try:
             values_dict["r"] = currentValue
             print(f"Repack Range = {currentValue}")
 
-        elif currentArgument in ("-p", "--rounds_packmin"):
+        elif currentArgument in ("-p", "--backrub"):
             values_dict["p"] = currentValue
-            print(f"Rounds of Pack and Minimization = {currentValue}")
+            print(f"Backrub Ensemble = {currentValue}")
 
         elif currentArgument in ("-b", "--beta"):
             values_dict["b"] = True
@@ -49,13 +50,17 @@ try:
             values_dict["c"] = True
             print("Enabling cartesian minimization flag.")
 
-        elif currentArgument in ("s", "--soft_rep"):
+        elif currentArgument in ("-s", "--soft_rep"):
             values_dict["s"] = True
             print("Using soft_rep_design flag")
 
-        elif currentArgument in ("a", "--all_repack"):
+        elif currentArgument in ("-a", "--all_repack"):
             values_dict["a"] = True
             print("Repacking all residues")
+        
+        elif currentArgument in ("-n", "--pdbs"):
+            values_dict["n"] = re.split(",", currentValue)
+            print("PDBs:", currentValue)
 
 except getopt.error as err:
     # output error, and return with an error code
@@ -80,8 +85,7 @@ data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 # TESTING
 def backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn):
-    
-    print("hello")
+
     start = time.time()
     backrubber = backrub.BackrubMover()
     backrubber.init_with_options()
@@ -189,7 +193,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
     # Minimizes residues within repack range of mutations
     mmf = MoveMapFactory()
-    mmf.add_bb_action(mm_enable, nbr_selector) # this was turned off for minimization in flex ddg I think FIXME
+    mmf.add_bb_action(mm_enable, nbr_selector)
     mmf.add_chi_action(mm_enable, nbr_selector)
     
     # mm = mmf.create_movemap_from_pose(pose) # ONLY NEEDED IF FAST RELAX
@@ -206,7 +210,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     packer_mut.task_factory(tf_mut)
     packer_wt.task_factory(tf)
 
-    # Want global minimization after backrub
+    # Want global minimization after backrub, this was turned on for minimization in flex ddg I think FIXME
     mmf.all_bb(True)
     mmf.all_chi(True)
     
@@ -257,7 +261,7 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
         mutPose.dump_pdb("2_bound_mutated.pdb")
     bound_mutated = ddg_scorefxn(mutPose)
     rmsd_mutated = all_atom_rmsd(original, mutPose)
-
+    
     unbound_original.detached_copy(original)
     unbound_mutPose.detached_copy(mutPose)
 
@@ -284,7 +288,10 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     return ddG, rmsd_mutated
 
 
-pdbs = data["#PDB"].unique()
+if values_dict["n"] == "all":
+    pdbs = data["#PDB"].unique() # TESTING FIXME
+else:
+    pdbs = values_dict["n"] # TESTING FIXME
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 
 # need cartesian score function for minimization (if cart is chosen.)
@@ -299,10 +306,8 @@ else:
 # ddG score function should be regular, as the cart term can vary largely between structures.
 ddg_scorefxn = get_score_function()
 
-# Try 12, where did 8 come from? It came from the relax 8
-repack_range = int(values_dict["r"])
-# TO ALLOW PARALLEL RUNS AND TESTS: initial run was pdbs[:8], next run is pdbs[8:20], next after is [20:30],
-# then [30:38]. These were generated based on approx times I wanted to let them run.
+repack_range = int(values_dict["r"]) # 8 default is from flex-ddg
+
 count = 0
 
 for pdb in pdbs:
@@ -341,7 +346,7 @@ for pdb in pdbs:
         print("DDG: ", total)
         print("RMSD: ", rmsd_total)
         df = pd.concat([df, pd.DataFrame({"#PDB": pdb, "Position": pos, "WT_AA": wt,
-                                          "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True)
+                                          "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True, sort=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
         print("Avg time per ensemble member:",
