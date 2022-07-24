@@ -279,10 +279,11 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
         unbound_mutPose.dump_pdb("4_unbound_mutated.pdb")
     unbound_mutated = ddg_scorefxn(unbound_mutPose)
 
-    print("unbound_unmutated", unbound_unmutated)
-    print("bound_unmutated", bound_unmutated)
-    print("unbound_mutated", unbound_mutated)
-    print("bound_mutated", bound_mutated)
+    ddg_scorefxn.show(mutPose)
+    # print("unbound_unmutated", unbound_unmutated)
+    # print("bound_unmutated", bound_unmutated)
+    # print("unbound_mutated", unbound_mutated)
+    # print("bound_mutated", bound_mutated)
     ddG = (bound_mutated - unbound_mutated) - \
         (bound_unmutated - unbound_unmutated)
     return ddG, rmsd_mutated
