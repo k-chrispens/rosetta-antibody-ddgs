@@ -18,11 +18,11 @@ import getopt
 import sys
 
 args = sys.argv[1:]
-options = "r:p:bo:csan:"
+options = "r:p:bo:csan:t:"
 long_options = ["repack_range=", "backrub=",
-                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs="]
+                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "steps="]
 values_dict = {"r": 8, "p": 1, "b": False,
-               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all"}
+               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all", "t": 5000}
 
 try:
     # Parsing argument
@@ -62,6 +62,10 @@ try:
             values_dict["n"] = re.split(",", currentValue)
             print("PDBs:", currentValue)
 
+        elif currentArgument in ("-t", "--steps"):
+            values_dict["t"] = currentValue
+            print(f"Backrub Steps = {currentValue}")
+
 except getopt.error as err:
     # output error, and return with an error code
     print(str(err))
@@ -71,19 +75,21 @@ data = pd.read_csv("./raw_datasets/use_this_data.csv")
 # INIT
 # NOTE: Why use soft_rep_design? Kellogg et al. 2011
 if values_dict["b"] and values_dict["s"]:
-    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
+    pyrosetta.init(
+        "-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all -backrub:mc_kt 1.2 -backrub:ntrials {} -nstruct 1".format(values_dict["t"]))
 elif values_dict["b"]:
-    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
+    pyrosetta.init("-beta -ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials {} -nstruct 1".format(values_dict["t"]))
 elif values_dict["s"]:
-    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
+    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -soft_rep_design -mute all -backrub:mc_kt 1.2 -backrub:ntrials {} -nstruct 1".format(values_dict["t"]))
 else:
-    # FIXME put backrub flags here  -mc_kt 1.2 -nstruct 50 (only for use with job distributor) -backrub:ntrials 50000
-    pyrosetta.init("-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials 5000 -nstruct 1")
+    # FIXME put backrub flags here  -mc_kt 1.2 -nstruct 50 (only for use with job distributor) -backrub:ntrials 35000
+    pyrosetta.init(
+        "-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials {} -nstruct 1".format(values_dict["t"]))
 print(values_dict)
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 
-# TESTING
+# TESTING (Seems like nbr_selector and scorefxn params are not required, but need to be required if this is a unit function)
 def backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn):
 
     start = time.time()
@@ -211,8 +217,10 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
     packer_wt.task_factory(tf)
 
     # Want global minimization after backrub, this was turned on for minimization in flex ddg I think FIXME
-    mmf.all_bb(True)
-    mmf.all_chi(True)
+    if values_dict["a"]:
+        mmf.all_bb(True)
+        mmf.all_chi(True)
+    
     
     minmover = pyrosetta.rosetta.protocols.minimization_packing.MinMover()
     minmover.score_function(scorefxn)
@@ -353,7 +361,7 @@ for pdb in pdbs:
         print("Avg time per ensemble member:",
               (end-start)/int(values_dict["p"]), "seconds")
         count += 1
-        if count % 20 == 0:
+        if count % 2 == 0:
             df.to_csv(values_dict["o"], index=False)
             print("Wrote to csv.", flush=True)
 
