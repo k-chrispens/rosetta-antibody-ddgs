@@ -3,10 +3,13 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import *
+from patsy import dmatrices
+import statsmodels.api as sm
 import seaborn as sns
 import re
 
-sns.set_context("notebook", font_scale = 0.6)
+sns.set_context("poster", font_scale = 1.2)
 
 data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/use_this_data.csv")
 
@@ -52,14 +55,16 @@ muts_to_aa = []
 
 for aa in aas:
     # count regex matches in mutations
-    all_mut_aa = interface_data["Mutations"].apply(lambda x: re.findall(
+    all_mut_aa = data["Mutations"].apply(lambda x: re.findall(
         fr"\w:\w\d+{aa}", x))
     num_mut_per_data = all_mut_aa.apply(len)
     total_mut = sum(num_mut_per_data)
     muts_to_aa.append(total_mut)
 
 data_muts_to_aa = pd.DataFrame(data = {"Amino Acids": aas, "Mutations to Amino Acid": muts_to_aa})
-sns.barplot(x = "Amino Acids", y = "Mutations to Amino Acid", data = data_muts_to_aa)
+fig, ax = plt.subplots(figsize=(11, 9))
+sns.barplot(x = "Amino Acids", y = "Mutations to Amino Acid", data = data_muts_to_aa, palette="crest")
+plt.title("Mutations per Amino Acid")
 plt.savefig("./images/mutations_per_aa.png")
 plt.clf()
 
@@ -70,7 +75,7 @@ mut_pdbs["#PDB"] = data["#PDB"].unique()
 mut_pdbs_list = []
 
 for pdb in mut_pdbs["#PDB"]:
-    lds = interface_data[interface_data["#PDB"] == pdb]["LD"]
+    lds = data[data["#PDB"] == pdb]["LD"]
     mut_pdbs_list.append(sum(lds))
 
 mut_pdbs["Number of Mutations"] = mut_pdbs_list
@@ -87,7 +92,7 @@ plt.clf()
 
 ### Average ddG for interface vs non-interface mutations
 
-data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+# data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 non_int = data[data["Interface?"] == False]
 interface = data[data["Interface?"] == True]
 
@@ -98,6 +103,7 @@ avgs = pd.DataFrame({
     "Average ddG": [interface_avg, non_int_avg]
 })
 barplt = sns.barplot(x = "Mutation Position", y = "Average ddG", data=avgs)
+plt.title("Average ΔΔG for Interface vs Non-Interface Mutations")
 plt.savefig("./images/avg_ddG_interfaces.png")
 plt.clf()
 
@@ -112,8 +118,18 @@ df = pd.DataFrame({
 })
 
 histplt = sns.histplot(data = df, kde = True, element="step")
+plt.title("ΔΔG of Interface and Non-Interface Mutations")
 plt.xlabel("ΔΔG (kcal/mol)")
 plt.savefig("./images/ddG_hist_interfaces.png")
+plt.clf()
+
+### ddG histogram for all mutations
+
+fig, ax = plt.subplots(figsize=(11, 9))
+histplt = sns.histplot(data = data["ddG(kcal/mol)"], kde = True, element="step", palette=colors.Colormap("crest"))
+plt.title("ΔΔG of Mutations in Dataset")
+plt.xlabel("ΔΔG (kcal/mol)")
+plt.savefig("./images/ddG_hist.png")
 plt.clf()
 
 ### Epistatic 1st order coeffs
@@ -218,4 +234,22 @@ plot = sns.heatmap(data=data, cmap='vlag', center=0, annot=True)
 plot.set_title("CR9114 2nd Order Coefficients (kcal/mol)")
 plt.ylabel("")
 plt.savefig("./images/coeffs_2_9114.png")
+plt.clf()
+
+## Correlation Plot
+
+ddgs = pd.read_excel("./FLEX_RUNS.xlsx", "Sheet1")
+ddgs = ddgs.dropna(subset="8 5 r s")
+print(ddgs.head())
+y, X = dmatrices("Q('8 5 r s') ~ Q('ddG(kcal/mol)')",
+                 data=ddgs, return_type='dataframe')
+model = sm.OLS(y, X)
+results = model.fit()
+print(results.summary())
+fig, ax = plt.subplots(figsize=(11, 9))
+sns.regplot(y="8 5 r s", x="ddG(kcal/mol)", data=ddgs, color="darkcyan", truncate=False, scatter_kws={"s": 20})
+plt.title("Best Current Correlation")
+plt.xlabel("Experimental ΔΔG (kcal/mol)")
+plt.ylabel("Predicted ΔΔG (kcal/mol)")
+plt.savefig("./images/current_best_corr.png")
 plt.clf()
