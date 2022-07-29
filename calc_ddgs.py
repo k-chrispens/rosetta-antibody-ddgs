@@ -1,7 +1,7 @@
 """Calculating ddGs.
 REQUIRED - cmd line args: int repack_range, int backrub_ensemble_size, 
 flag beta (scorefunction), str path (to output), flag cartesian, 
-flag soft_rep, flag all_repack, str pdbs (comma-separated)
+flag soft_rep, flag all_repack, str pdbs (comma-separated), int backrub_trials
 Author: Karson Chrispens"""
 
 from pyrosetta import *
@@ -20,7 +20,7 @@ import sys
 args = sys.argv[1:]
 options = "r:p:bo:csan:t:"
 long_options = ["repack_range=", "backrub=",
-                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "steps="]
+                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "trials="]
 values_dict = {"r": 8, "p": 1, "b": False,
                "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all", "t": 5000}
 
@@ -62,9 +62,9 @@ try:
             values_dict["n"] = re.split(",", currentValue)
             print("PDBs:", currentValue)
 
-        elif currentArgument in ("-t", "--steps"):
+        elif currentArgument in ("-t", "--trials"):
             values_dict["t"] = currentValue
-            print(f"Backrub Steps = {currentValue}")
+            print(f"Backrub Trials = {currentValue}")
 
 except getopt.error as err:
     # output error, and return with an error code
