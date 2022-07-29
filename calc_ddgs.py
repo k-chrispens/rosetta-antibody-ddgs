@@ -322,6 +322,7 @@ for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
     points = points.loc[points["Interface?"] == True]
     points = points.loc[points["LD"] == 1]  # TESTING FIXME
+    points = points.iloc[2:] # DELETE AFTER 50 RUNS
     pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb")
     for index, point in points.iterrows():
         muts = re.split(";", point["Mutations"])
