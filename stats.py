@@ -239,15 +239,15 @@ plt.clf()
 ## Correlation Plot
 
 ddgs = pd.read_excel("./FLEX_RUNS.xlsx", "Sheet1")
-ddgs = ddgs.dropna(subset="8 5 35k r s")
+ddgs = ddgs.dropna(subset="8 10 35k r s")
 print(ddgs.head())
-y, X = dmatrices("Q('8 5 35k r s') ~ Q('ddG(kcal/mol)')",
+y, X = dmatrices("Q('8 10 35k r s') ~ Q('ddG(kcal/mol)')",
                  data=ddgs, return_type='dataframe')
 model = sm.OLS(y, X)
 results = model.fit()
 print(results.summary())
 fig, ax = plt.subplots(figsize=(13, 10))
-sns.regplot(y="8 5 35k r s", x="ddG(kcal/mol)", data=ddgs, color="darkcyan", truncate=False, scatter_kws={"s": 20})
+sns.regplot(y="8 10 35k r s", x="ddG(kcal/mol)", data=ddgs, color="darkcyan", truncate=False, scatter_kws={"s": 20})
 plt.title("Best Current Correlation")
 plt.xlabel("Experimental ΔΔG (kcal/mol)")
 plt.ylabel("Predicted ΔΔG (kcal/mol)")

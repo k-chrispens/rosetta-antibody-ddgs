@@ -78,13 +78,13 @@ except getopt.error as err:
 
 rosetta_scripts_path = os.path.expanduser(
     "~/rosetta/source/bin/rosetta_scripts")
-nstruct = 3  # Normally 35
-max_minimization_iter = 5  # Normally 5000
-abs_score_convergence_thresh = 200.0  # Normally 1.0
-number_backrub_trials = 10  # Normally 35000
+nstruct = 10  # Normally 35
+max_minimization_iter = 5000  # Normally 5000
+abs_score_convergence_thresh = 1.0  # Normally 1.0
+number_backrub_trials = 35000  # Normally 35000
 # Can be whatever you want, if you would like to see results from earlier time points in the backrub trajectory. 7000 is a reasonable number, to give you three checkpoints for a 35000 step run, but you could also set it to 35000 for quickest run time (as the final minimization and packing steps will only need to be run one time).
-backrub_trajectory_stride = 5
-path_to_script = 'ddG-backrub.xml'
+backrub_trajectory_stride = 35000
+path_to_script = 'ddG-backrub_og.xml'
 # Getting data from the dataset
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 points = data.loc[data["Interface?"] == True] # TESTING
@@ -96,14 +96,13 @@ if not os.path.isfile(rosetta_scripts_path):
     raise Exception('Rosetta scripts missing')
 
 
-def run_flex_ddg_saturation(name, input_path, input_pdb_path, jumps, mut_info, nstruct_i):
+def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
     output_directory = os.path.join('output', os.path.join(
-        '%s_%s' % (name), '%02d' % nstruct_i))
+        '%s' % (name), '%02d' % nstruct_i))
     if not os.path.isdir(output_directory):
         os.makedirs(output_directory)
 
-    resfile_path = os.path.join(output_directory, 'mutate_%s.resfile' % (
-        name))
+    resfile_path = os.path.join(output_directory, 'mutate_%s.resfile' % (name))
     with open(resfile_path, 'w') as f:
         f.write('NATRO\nstart\n')
         for mut in mut_info:
@@ -181,7 +180,7 @@ if __name__ == '__main__':
                 residues_to_mutate.append((chains, pos, mut, name_muts))
 
             for info in residues_to_mutate:
-                cases.append(('{}_{}'.format(pdb, info[3]), "./inputs/", path, jump, info[:3], nstruct_i))
+                cases.append(('{}_{}'.format(pdb, info[3]), path, jump, info[:3], nstruct_i))
 
     if use_multiprocessing:
         pool = multiprocessing.Pool(processes=min(
