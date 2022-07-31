@@ -76,8 +76,8 @@ except getopt.error as err:
 #            Please change them to the "normal" default values before a real run.
 ###################################################################################################################################################################
 
-rosetta_scripts_path = os.path.expanduser(
-    "/projects/kach6913/rosetta.source.release-314/main/source/bin")
+rosetta_scripts_path = os.path.abspath(
+    "/projects/kach6913/rosetta.source.release-314/main/source/bin/rosetta_scripts.linuxgccrelease")
 nstruct = 10  # Normally 35
 max_minimization_iter = 5000  # Normally 5000
 abs_score_convergence_thresh = 1.0  # Normally 1.0

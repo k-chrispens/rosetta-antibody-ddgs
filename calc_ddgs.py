@@ -18,11 +18,11 @@ import getopt
 import sys
 
 args = sys.argv[1:]
-options = "r:p:bo:csan:t:"
+options = "r:p:bo:csan:t:l:"
 long_options = ["repack_range=", "backrub=",
-                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "trials="]
+                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "trials=", "ld="]
 values_dict = {"r": 8, "p": 1, "b": False,
-               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all", "t": 5000}
+               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all", "t": 5000, "l": 1}
 
 try:
     # Parsing argument
@@ -65,6 +65,10 @@ try:
         elif currentArgument in ("-t", "--trials"):
             values_dict["t"] = currentValue
             print(f"Backrub Trials = {currentValue}")
+            
+        elif currentArgument in ("-l", "--ld"):
+            values_dict["l"] = currentValue
+            print(f"Running on LD = {currentValue}")
 
 except getopt.error as err:
     # output error, and return with an error code
@@ -261,12 +265,14 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     # Bound unmutated
     original, mutPose = pack_and_relax(mutPose, pos, mut, repack_range, scorefxn)    
     if output_pdb:
-        original.dump_pdb("1_bound_unmutated.pdb")
+        # THIS IS KINDA WEIRD AND MAY RESULT IN BADLY NAMED FILES IF NOT CAREFUL
+        original.dump_pdb(f"./pyrosetta_outputs/{pdb}_{count}_bound_unmutated.pdb")
     bound_unmutated = ddg_scorefxn(original)
 
     # Bound mutated
     if output_pdb:
-        mutPose.dump_pdb("2_bound_mutated.pdb")
+        # THIS IS KINDA WEIRD AND MAY RESULT IN BADLY NAMED FILES IF NOT CAREFUL
+        mutPose.dump_pdb(f"./pyrosetta_outputs/{pdb}_{count}_bound_mutated.pdb")
     bound_mutated = ddg_scorefxn(mutPose)
     rmsd_mutated = all_atom_rmsd(original, mutPose)
     
@@ -277,20 +283,18 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     unbind(unbound_original, jump)
     # pack_and_relax(unbound_original, pos, wt, repack_range, scorefxn) # flex-ddg does NOT repack unbound poses
     if output_pdb:
-        unbound_original.dump_pdb("3_unbound_unmutated.pdb")
+        # THIS IS KINDA WEIRD AND MAY RESULT IN BADLY NAMED FILES IF NOT CAREFUL
+        unbound_original.dump_pdb(f"./pyrosetta_outputs/{pdb}_{count}_unbound_unmutated.pdb")
     unbound_unmutated = ddg_scorefxn(unbound_original)
 
     # Unbound mutated
     unbind(unbound_mutPose, jump)
     # pack_and_relax(unbound_mutPose, pos, mut, repack_range, scorefxn) # flex-ddg does NOT repack unbound poses
     if output_pdb:
-        unbound_mutPose.dump_pdb("4_unbound_mutated.pdb")
+        # THIS IS KINDA WEIRD AND MAY RESULT IN BADLY NAMED FILES IF NOT CAREFUL
+        unbound_mutPose.dump_pdb(f"./pyrosetta_outputs/{pdb}_{count}_unbound_mutated.pdb")
     unbound_mutated = ddg_scorefxn(unbound_mutPose)
 
-    # print("unbound_unmutated", unbound_unmutated)
-    # print("bound_unmutated", bound_unmutated)
-    # print("unbound_mutated", unbound_mutated)
-    # print("bound_mutated", bound_mutated)
     ddG = (bound_mutated - unbound_mutated) - \
         (bound_unmutated - unbound_unmutated)
     return ddG, rmsd_mutated
@@ -321,8 +325,15 @@ count = 0
 for pdb in pdbs:
     points = data.loc[data["#PDB"] == pdb]
     points = points.loc[points["Interface?"] == True]
-    points = points.loc[points["LD"] == 1]  # TESTING FIXME
-    points = points.iloc[2:] # DELETE AFTER 50 RUNS
+    if values_dict["l"] == 1:
+        points = points.loc[points["LD"] == 1]  # TESTING FIXME
+    elif values_dict["l"] == 2:
+        points = points.loc[points["LD"] == 2]  # TESTING FIXME
+    elif values_dict["l"] == 3:
+        points = points.loc[points["LD"] == 3]  # TESTING FIXME
+    elif values_dict["l"] == 4:
+        points = points.loc[points["LD"] == 4]  # TESTING FIXME
+        
     pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb")
     for index, point in points.iterrows():
         muts = re.split(";", point["Mutations"])
@@ -347,7 +358,7 @@ for pdb in pdbs:
         total = 0
         rmsd_total = 0
         for _ in range(int(values_dict["p"])):
-            ddg, rmsd = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
+            ddg, rmsd = calc_ddg(pose, pos, wt, mut, repack_range, jump, True)
             total += ddg
             rmsd_total += rmsd
         total = total / int(values_dict["p"])
