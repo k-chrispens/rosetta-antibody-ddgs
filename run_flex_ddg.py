@@ -107,6 +107,7 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
         f.write('NATRO\nstart\n')
         for mut in mut_info:
             # chains, pos, mut
+            print(mut) # FIXME TESTING
             mutation_chain, pos, mut_aa = mut
             f.write('%s %s PIKAA %s\n' %
                 (pos, mutation_chain, mut_aa))
