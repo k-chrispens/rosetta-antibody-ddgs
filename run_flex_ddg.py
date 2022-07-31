@@ -77,7 +77,7 @@ except getopt.error as err:
 ###################################################################################################################################################################
 
 rosetta_scripts_path = os.path.expanduser(
-    "~/rosetta/source/bin/rosetta_scripts")
+    "/projects/kach6913/rosetta.source.release-314/main/source/bin")
 nstruct = 10  # Normally 35
 max_minimization_iter = 5000  # Normally 5000
 abs_score_convergence_thresh = 1.0  # Normally 1.0
