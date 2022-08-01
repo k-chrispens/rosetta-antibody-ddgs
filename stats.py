@@ -3,10 +3,13 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import *
+from patsy import dmatrices
+import statsmodels.api as sm
 import seaborn as sns
 import re
 
-sns.set_context("notebook", font_scale = 0.6)
+sns.set_context("poster", font_scale = 1.2)
 
 data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/use_this_data.csv")
 
@@ -52,14 +55,16 @@ muts_to_aa = []
 
 for aa in aas:
     # count regex matches in mutations
-    all_mut_aa = interface_data["Mutations"].apply(lambda x: re.findall(
+    all_mut_aa = data["Mutations"].apply(lambda x: re.findall(
         fr"\w:\w\d+{aa}", x))
     num_mut_per_data = all_mut_aa.apply(len)
     total_mut = sum(num_mut_per_data)
     muts_to_aa.append(total_mut)
 
 data_muts_to_aa = pd.DataFrame(data = {"Amino Acids": aas, "Mutations to Amino Acid": muts_to_aa})
-sns.barplot(x = "Amino Acids", y = "Mutations to Amino Acid", data = data_muts_to_aa)
+fig, ax = plt.subplots(figsize=(11, 9))
+sns.barplot(x = "Amino Acids", y = "Mutations to Amino Acid", data = data_muts_to_aa, palette="crest")
+plt.title("Mutations per Amino Acid")
 plt.savefig("./images/mutations_per_aa.png")
 plt.clf()
 
@@ -70,7 +75,7 @@ mut_pdbs["#PDB"] = data["#PDB"].unique()
 mut_pdbs_list = []
 
 for pdb in mut_pdbs["#PDB"]:
-    lds = interface_data[interface_data["#PDB"] == pdb]["LD"]
+    lds = data[data["#PDB"] == pdb]["LD"]
     mut_pdbs_list.append(sum(lds))
 
 mut_pdbs["Number of Mutations"] = mut_pdbs_list
@@ -87,7 +92,7 @@ plt.clf()
 
 ### Average ddG for interface vs non-interface mutations
 
-data = pd.read_csv("./raw_datasets/interface_data_use.csv")
+# data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 non_int = data[data["Interface?"] == False]
 interface = data[data["Interface?"] == True]
 
@@ -98,6 +103,7 @@ avgs = pd.DataFrame({
     "Average ddG": [interface_avg, non_int_avg]
 })
 barplt = sns.barplot(x = "Mutation Position", y = "Average ddG", data=avgs)
+plt.title("Average ΔΔG for Interface vs Non-Interface Mutations")
 plt.savefig("./images/avg_ddG_interfaces.png")
 plt.clf()
 
@@ -112,29 +118,39 @@ df = pd.DataFrame({
 })
 
 histplt = sns.histplot(data = df, kde = True, element="step")
+plt.title("ΔΔG of Interface and Non-Interface Mutations")
 plt.xlabel("ΔΔG (kcal/mol)")
 plt.savefig("./images/ddG_hist_interfaces.png")
+plt.clf()
+
+### ddG histogram for all mutations
+
+fig, ax = plt.subplots(figsize=(11, 9))
+histplt = sns.histplot(data = data["ddG(kcal/mol)"], kde = True, element="step", palette=colors.Colormap("crest"))
+plt.title("ΔΔG of Mutations in Dataset")
+plt.xlabel("ΔΔG (kcal/mol)")
+plt.savefig("./images/ddG_hist.png")
 plt.clf()
 
 ### Epistatic 1st order coeffs
 
 coeff_dict = {
-    "S29F": 0.29620232960015264,
-    "N30S": 0.7980125108028767,
-    "N31S": 0.7945511047351377,
-    "S52I": 3.1534573246328,
-    "S56T": 1.206309296497863,
-    "T57A": 0.5818191866544703,
-    "A58N": -0.6496541403257541,
-    "S70T": 0.06962278800732419,
-    "I73K": 2.4629962706463875,
-    "F74S": 2.5137817437253727,
-    "S75T": 0.12123731392549425,
-    "N76S": 0.3360267429510174,
-    "N82AS": 0.08872932391145028,
-    "T83R": 0.14462831079363442,
-    "F91Y": -0.04742070420420187,
-    "S100BY": 0.33575423269144783
+    "S29F": 0.3474748118778095,
+    "N30S": 0.7850383407363816,
+    "N31S": 0.6615118758001257,
+    "S52I": 5.751941190773612,
+    "S56T": 0.9459365035490297,
+    "T57A": 0.6456928920891415,
+    "A58N": -0.5386655036571883,
+    "S70T": 0.049680007275027735,
+    "I73K": 2.1620856562256816,
+    "F74S": 2.366870250624797,
+    "S75T": 0.1521897924114612,
+    "N76S": 0.20765234633346258,
+    "N82AS": 0.0618895688006494,
+    "T83R": 0.14655872622630178,
+    "F91Y": -0.0647305093343003,
+    "S100BY": 0.28464140588828324,
 }
 
 coeffs = pd.DataFrame({
@@ -146,21 +162,22 @@ barplt = sns.barplot(x="Mutations", y="Coefficients", data=coeffs, palette="rock
 sns.despine(bottom=True)
 barplt.axhline(y=0, color="black")
 barplt.set_xlabel("Mutations (CR9114)")
-plt.savefig("./images/coeffs_1_6261.png")
+barplt.set_ylabel("Model Coefficients (kcal/mol)")
+plt.savefig("./images/coeffs_1_9114.png")
 plt.clf()
 
 coeff_dict = {
-    "P28T": 0.837341564950566,
-    "R30S": 0.7541460966005754,
-    "T57A": -0.0345329369999683,
-    "K58N": 0.11930498851566934,
-    "P61Q": -0.050442789001268966,
-    "D73E": -0.00649964868499584,
-    "F74S": 0.6424008942583567,
-    "A75T": -0.08220430609783097,
-    "G76S": 0.23617983576184245,
-    "V78A": 0.09830564802979372,
-    "V100L": 0.04400281039483982
+    "P28T": 1.3125487578097275,
+    "R30S": 1.1271353818461578,
+    "T57A": 0.05041079565338836,
+    "K58N": 0.25192585367828907,
+    "P61Q": 0.030367383609466614,
+    "D73E": 0.08223430957471058,
+    "F74S": 1.1464864109761814,
+    "A75T": -0.10433763817940633,
+    "G76S": 0.4610491870945383,
+    "V78A": 0.29463292741194436,
+    "V100L": 0.1561891795098677
 }
 
 coeffs = pd.DataFrame({
@@ -173,8 +190,23 @@ barplt = sns.barplot(x="Mutations", y="Coefficients",
 sns.despine(bottom=True)
 barplt.axhline(y=0, color="black")
 barplt.set_xlabel("Mutations (CR6261)")
-plt.savefig("./images/coeffs_1_9114.png")
+barplt.set_ylabel("Model Coefficients (kcal/mol)")
+plt.savefig("./images/coeffs_1_6261.png")
 plt.clf()
+
+fig, ax = plt.subplots(figsize=(1, 5))
+coeffs = pd.read_csv("./raw_datasets/9114_2order_1.csv", index_col="Mutation")
+heatmap = sns.heatmap(data=coeffs, cmap="vlag", annot=True)
+plt.title("Non-interacting\nCoefficients")
+plt.savefig("./images/coeffs_2_1_9114_heatmap.png", bbox_inches="tight")
+plt.clf()
+
+coeffs = pd.read_csv("./raw_datasets/6261_2order_1.csv", index_col="Mutation")
+heatmap = sns.heatmap(data=coeffs, cmap="vlag", annot=True)
+plt.title("Non-interacting\nCoefficients")
+plt.savefig("./images/coeffs_2_1_6261_heatmap.png", bbox_inches="tight")
+plt.clf()
+
 
 ### Epistatic 2nd order coeffs
 
@@ -184,8 +216,9 @@ data1 = data.pivot_table('Coefficient','Mut1','Mut2').reindex(index=idx, columns
 data2 = data.pivot_table('Coefficient','Mut2','Mut1').reindex(index=idx, columns=idx)
 data = data1.combine_first(data2)
 data = data.fillna(1)
-plot = sns.heatmap(data=data, cmap='vlag', center=0)
-plot.set_title("CR6261 2nd Order Coefficients")
+fig, ax = plt.subplots(figsize=(10, 5))
+plot = sns.heatmap(data=data, cmap='vlag', center=0, annot=True)
+plot.set_title("CR6261 2nd Order Coefficients (kcal/mol)")
 plt.ylabel("")
 plt.savefig("./images/coeffs_2_6261.png")
 plt.clf()
@@ -196,8 +229,27 @@ data1 = data.pivot_table('Coefficient','Mut1','Mut2').reindex(index=idx, columns
 data2 = data.pivot_table('Coefficient','Mut2','Mut1').reindex(index=idx, columns=idx)
 data = data1.combine_first(data2)
 data = data.fillna(1)
-plot = sns.heatmap(data=data, cmap='vlag', center=0)
-plot.set_title("CR9114 2nd Order Coefficients")
+fig, ax = plt.subplots(figsize=(10, 5))
+plot = sns.heatmap(data=data, cmap='vlag', center=0, annot=True)
+plot.set_title("CR9114 2nd Order Coefficients (kcal/mol)")
 plt.ylabel("")
 plt.savefig("./images/coeffs_2_9114.png")
+plt.clf()
+
+## Correlation Plot
+
+ddgs = pd.read_excel("./FLEX_RUNS.xlsx", "Sheet1")
+ddgs = ddgs.dropna(subset="8 10 35k r s")
+print(ddgs.head())
+y, X = dmatrices("Q('8 10 35k r s') ~ Q('ddG(kcal/mol)')",
+                 data=ddgs, return_type='dataframe')
+model = sm.OLS(y, X)
+results = model.fit()
+print(results.summary())
+fig, ax = plt.subplots(figsize=(13, 10))
+sns.regplot(y="8 10 35k r s", x="ddG(kcal/mol)", data=ddgs, color="darkcyan", truncate=False, scatter_kws={"s": 20})
+plt.title("Best Current Correlation")
+plt.xlabel("Experimental ΔΔG (kcal/mol)")
+plt.ylabel("Predicted ΔΔG (kcal/mol)")
+plt.savefig("./images/current_best_corr.png")
 plt.clf()

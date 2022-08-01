@@ -5,5 +5,5 @@
 *.sh
 *.out
 *.ipynb_checkpoints
-test.py
+test*
 \#*
