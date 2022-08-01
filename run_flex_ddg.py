@@ -22,7 +22,7 @@ args = sys.argv[1:]
 options = "r:e:bo:csan:t:"
 long_options = ["backrub_range=", "ensemble_size=",
                 "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "trials="]
-values_dict = {"r": 8, "p": 1, "b": False,
+values_dict = {"r": 8, "e": 1, "b": False,
                "o": "UNNAMED", "c": False, "s": False, "a": False, "n": "all", "t": 5000}
 
 try:
