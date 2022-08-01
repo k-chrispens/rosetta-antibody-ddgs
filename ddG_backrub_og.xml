@@ -66,7 +66,7 @@
     <SavePoseMover name="save_backrub_pose" restore_pose="0" reference_name="backrubpdb"/>
     <SavePoseMover name="restore_backrub_pose" restore_pose="1" reference_name="backrubpdb"/>
 
-    <InterfaceDdGMover name="int_ddG_mover" wt_ref_savepose_mover="save_wt_bound_pose" jump_id="%%jump%%" db_reporter="dbreport" scorefxn="fa_talaris2014"/>
+    <InterfaceDdGMover name="int_ddG_mover" wt_ref_savepose_mover="save_wt_bound_pose" jump="%%jump%%" db_reporter="dbreport" scorefxn="fa_talaris2014"/>
 
     <ScoreMover name="apply_score" scorefxn="fa_talaris2014_cst" verbose="0"/>
 

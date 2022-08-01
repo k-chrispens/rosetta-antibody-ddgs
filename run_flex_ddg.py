@@ -23,7 +23,7 @@ options = "r:e:bo:csan:t:"
 long_options = ["backrub_range=", "ensemble_size=",
                 "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "trials="]
 values_dict = {"r": 8, "p": 1, "b": False,
-               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all", "t": 5000}
+               "o": "UNNAMED", "c": False, "s": False, "a": False, "n": "all", "t": 5000}
 
 try:
     # Parsing argument
@@ -78,17 +78,17 @@ except getopt.error as err:
 
 rosetta_scripts_path = os.path.abspath(
     "/projects/kach6913/rosetta.source.release-314/main/source/bin/rosetta_scripts.linuxgccrelease")
-nstruct = 10  # Normally 35
+nstruct = values_dict['e']  # Normally 35
 max_minimization_iter = 5000  # Normally 5000
 abs_score_convergence_thresh = 1.0  # Normally 1.0
-number_backrub_trials = 35000  # Normally 35000
+number_backrub_trials = values_dict['t']  # Normally 35000
 # Can be whatever you want, if you would like to see results from earlier time points in the backrub trajectory. 7000 is a reasonable number, to give you three checkpoints for a 35000 step run, but you could also set it to 35000 for quickest run time (as the final minimization and packing steps will only need to be run one time).
-backrub_trajectory_stride = 35000
-path_to_script = 'ddG-backrub_og.xml'
+backrub_trajectory_stride = values_dict['t']
+path_to_script = 'ddG_backrub_og.xml'
 # Getting data from the dataset
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
 points = data.loc[data["Interface?"] == True] # TESTING
-points = points.loc[points["LD"] == 1] # TESTING
+points = points.loc[points["LD"] == 1] # TESTING (CHANGE SOON!)
 
 if not os.path.isfile(rosetta_scripts_path):
     print('ERROR: "rosetta_scripts_path" variable must be set to the location of the "rosetta_scripts" binary executable')
@@ -97,7 +97,7 @@ if not os.path.isfile(rosetta_scripts_path):
 
 
 def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
-    output_directory = os.path.join('output', os.path.join(
+    output_directory = os.path.join(values_dict['o'], os.path.join(
         '%s' % (name), '%02d' % nstruct_i))
     if not os.path.isdir(output_directory):
         os.makedirs(output_directory)
@@ -107,10 +107,9 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
         f.write('NATRO\nstart\n')
         for mut in mut_info:
             # chains, pos, mut
-            print(mut) # FIXME TESTING
             mutation_chain, pos, mut_aa = mut
             f.write('%s %s PIKAA %s\n' %
-                (pos, mutation_chain, mut_aa))
+                (pos[0], mutation_chain[0], mut_aa[0]))
 
     flex_ddg_args = [
         os.path.abspath(rosetta_scripts_path),
@@ -149,8 +148,6 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
 if __name__ == '__main__':
 
     # List of residue positions to mutate. Format: (Chain, PDB residue number, insertion code).
-    residues_to_mutate = []
-    cases = []
     for nstruct_i in range(1, nstruct + 1):
         # for case_name in os.listdir('inputs'):
         #     case_path = os.path.join('inputs', case_name)
@@ -163,7 +160,8 @@ if __name__ == '__main__':
             path = f"./inputs/{pdb}_all.pdb"
             points_pdb = points.loc[points["#PDB"] == pdb] # TESTING
 
-            for index, point in points.iterrows():
+            for index, point in points_pdb.iterrows():
+                residues_to_mutate = []
                 name_muts = re.sub(";", "_", point["Mutations"])
                 muts = re.split(";", point["Mutations"])
                 jump = point["Jump"]
@@ -178,21 +176,19 @@ if __name__ == '__main__':
                     chains.append(chain)
                     pos.append(str(posi) + ic)
                     mut.append(muta)
-                residues_to_mutate.append((chains, pos, mut, name_muts))
+                residues_to_mutate.append((chains, pos, mut))
 
-            for info in residues_to_mutate:
-                cases.append(('{}_{}'.format(pdb, info[3]), path, jump, info[:3], nstruct_i))
+                
+                if use_multiprocessing:
+                    pool = multiprocessing.Pool(processes=min(
+                        max_cpus, multiprocessing.cpu_count()))
 
-    if use_multiprocessing:
-        pool = multiprocessing.Pool(processes=min(
-            max_cpus, multiprocessing.cpu_count()))
+                if use_multiprocessing:
+                    pool.apply_async(run_flex_ddg_saturation, args=args)
+                else:
+                    print(residues_to_mutate)
+                    run_flex_ddg_saturation('{}_{}'.format(pdb, name_muts), path, jump, residues_to_mutate, nstruct_i)
 
-    for args in cases:
-        if use_multiprocessing:
-            pool.apply_async(run_flex_ddg_saturation, args=args)
-        else:
-            run_flex_ddg_saturation(*args)
-
-    if use_multiprocessing:
-        pool.close()
-        pool.join()
+                if use_multiprocessing:
+                    pool.close()
+                    pool.join()
