@@ -36,7 +36,7 @@ try:
             print(f"Repack Range = {currentValue}")
 
         elif currentArgument in ("-e", "--ensemble_size"):
-            values_dict["p"] = currentValue
+            values_dict["e"] = currentValue
             print(f"Backrub Ensemble = {currentValue}")
 
         elif currentArgument in ("-b", "--beta"):
@@ -78,12 +78,12 @@ except getopt.error as err:
 
 rosetta_scripts_path = os.path.abspath(
     "/projects/kach6913/rosetta.source.release-314/main/source/bin/rosetta_scripts.linuxgccrelease")
-nstruct = values_dict['e']  # Normally 35
+nstruct = int(values_dict['e'])  # Normally 35
 max_minimization_iter = 5000  # Normally 5000
 abs_score_convergence_thresh = 1.0  # Normally 1.0
-number_backrub_trials = values_dict['t']  # Normally 35000
+number_backrub_trials = int(values_dict['t'])  # Normally 35000
 # Can be whatever you want, if you would like to see results from earlier time points in the backrub trajectory. 7000 is a reasonable number, to give you three checkpoints for a 35000 step run, but you could also set it to 35000 for quickest run time (as the final minimization and packing steps will only need to be run one time).
-backrub_trajectory_stride = values_dict['t']
+backrub_trajectory_stride = int(values_dict['t'])
 path_to_script = 'ddG_backrub_og.xml'
 # Getting data from the dataset
 data = pd.read_csv("./raw_datasets/use_this_data.csv")
@@ -147,15 +147,7 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
 
 if __name__ == '__main__':
 
-    # List of residue positions to mutate. Format: (Chain, PDB residue number, insertion code).
     for nstruct_i in range(1, nstruct + 1):
-        # for case_name in os.listdir('inputs'):
-        #     case_path = os.path.join('inputs', case_name)
-        #     for f in os.listdir(case_path):
-        #         if f.endswith('.pdb'):
-        #             input_pdb_path = os.path.join(case_path, f)
-        #             break
-
         for pdb in values_dict["n"]:
             path = f"./inputs/{pdb}_all.pdb"
             points_pdb = points.loc[points["#PDB"] == pdb] # TESTING
