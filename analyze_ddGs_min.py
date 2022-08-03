@@ -70,12 +70,9 @@ def find_finished_jobs( output_folder ):
     job_dirs = [ os.path.abspath(os.path.join(output_folder, d)) for d in os.listdir(output_folder) if os.path.isdir( os.path.join(output_folder, d) )]
     for job_dir in job_dirs:
         completed_struct_dirs = []
-        for potential_struct_dir in sorted([ os.path.abspath(os.path.join(job_dir, d)) for d in os.listdir(job_dir) if os.path.isdir( os.path.join(job_dir, d) )]):
-            if rosetta_output_succeeded( potential_struct_dir ):
-                completed_struct_dirs.append( potential_struct_dir )
-        if len(completed_struct_dirs) > 0:
+        if rosetta_output_succeeded( job_dir ): # FIX THIS FOR STRUCTS THAT WERE ATTEMPTED TO BE OVERWRITTEN
+            completed_struct_dirs.append( job_dir )
             return_dict[job_dir] = completed_struct_dirs
-        
     return return_dict
 
 def get_scores_from_db3_file(db3_file, struct_number, case_name):
@@ -112,7 +109,7 @@ def get_scores_from_db3_file(db3_file, struct_number, case_name):
 def process_finished_struct( output_path, case_name ):
     db3_file = os.path.join( output_path, output_database_name )
     assert( os.path.isfile( db3_file ) )
-    struct_number = int( os.path.basename(output_path) )
+    struct_number = 1 # ONLY FOR MINIMAL MODEL
     scores_df = get_scores_from_db3_file( db3_file, struct_number, case_name )
 
     return scores_df
@@ -195,16 +192,16 @@ def analyze_output_folder( output_folder ):
         struct_scores_dfs.append( struct_scores )
         ddg_scores_dfs.append( ddg_scores )
         ddg_scores_dfs.append( apply_zemu_gam(ddg_scores) )
-        # ddg_scores_dfs.extend( calc_dgs( scores ) )
+        ddg_scores_dfs.extend( calc_dgs( scores ) )
 
     if not os.path.isdir(script_output_folder):
         os.makedirs(script_output_folder)
     basename = os.path.basename(output_folder)
 
-    # pd.concat( struct_scores_dfs ).to_csv( os.path.join(script_output_folder, basename + '_struct_scores_results.csv' ) )
+    pd.concat( struct_scores_dfs ).to_csv( os.path.join(script_output_folder, basename + '-struct_scores_results.csv' ) )
 
     df = pd.concat( ddg_scores_dfs )
-    df.to_csv( os.path.join(script_output_folder, basename + '_results.csv') )
+    df.to_csv( os.path.join(script_output_folder, basename + '-results.csv') )
 
     display_columns = ['backrub_steps', 'case_name', 'nstruct', 'score_function_name', 'scored_state', 'total_score']
     for score_type in ['mut_dG', 'wt_dG', 'ddG']:
