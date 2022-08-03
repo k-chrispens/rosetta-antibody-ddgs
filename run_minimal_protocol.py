@@ -141,7 +141,7 @@ def run_no_backrub_control(name, input_pdb_path, jump, mut_info):
 if __name__ == '__main__':
 
     for pdb in values_dict["n"]:
-        path = f"./inputs/{pdb}_all.pdb"
+        path = f"./inputs/{pdb}_all.clean.pdb"
         points_pdb = points.loc[points["#PDB"] == pdb]  # TESTING
 
         for index, point in points_pdb.iterrows():

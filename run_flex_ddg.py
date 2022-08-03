@@ -13,17 +13,16 @@ import pandas as pd
 import getopt
 import re
 
-use_multiprocessing = False # Maybe turn this on later if there's some pdbs that take especially long — also could delete some of the far residues.
+use_multiprocessing = True # Maybe turn this on later if there's some pdbs that take especially long — also could delete some of the far residues.
 if use_multiprocessing:
     import multiprocessing
-    max_cpus = 2  # We might want to not run on the full number of cores, as Rosetta take about 2 Gb of memory per instance
+    max_cpus = 4  # We might want to not run on the full number of cores, as Rosetta take about 2 Gb of memory per instance
 
 args = sys.argv[1:]
-options = "r:e:bo:csan:t:"
-long_options = ["backrub_range=", "ensemble_size=",
-                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "trials="]
-values_dict = {"r": 8, "e": 1, "b": False,
-               "o": "UNNAMED", "c": False, "s": False, "a": False, "n": "all", "t": 5000}
+options = "e:o:n:t:"
+long_options = ["ensemble_size=",
+                "output_path=", "pdbs=", "trials="]
+values_dict = {"e": 1, "o": "UNNAMED", "n": "all", "t": 5000}
 
 try:
     # Parsing argument
@@ -147,11 +146,10 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
 
 if __name__ == '__main__':
 
-    for nstruct_i in range(1, nstruct + 1):
-        for pdb in values_dict["n"]:
-            path = f"./inputs/{pdb}_all.pdb"
-            points_pdb = points.loc[points["#PDB"] == pdb] # TESTING
-
+    for pdb in values_dict["n"]:
+        path = f"./inputs/{pdb}_all.clean.pdb"
+        points_pdb = points.loc[points["#PDB"] == pdb]
+        for nstruct_i in range(1, nstruct + 1):
             for index, point in points_pdb.iterrows():
                 residues_to_mutate = []
                 name_muts = re.sub(";", "_", point["Mutations"])
