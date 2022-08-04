@@ -7,7 +7,9 @@ from pyrosetta.rosetta.core.select.movemap import *
 from rosetta.core.pack.task import TaskFactory
 from rosetta.protocols.relax import FastRelax
 from rosetta.core.scoring import *
+from pyrosetta.rosetta.core.import_pose import *
 from pyrosetta import *
+import sys
 # import pandas as pd
 init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 
@@ -15,11 +17,8 @@ init('-ex1 -ex2 -linmem_ig 10')  # add -ex1 -ex2
 # data = pd.read_csv("./raw_datasets/interface_data_use.csv")
 # pdbs = data["#PDB"].unique()
 
-pdbs = ["1BJ1", "1MHP", "1MLC", "3NGB", "3BN9", "2NZ9", "2B2X", "1CZ8"] # redoing pdbs with duplicates in structure
-poses = []
-for pdb in pdbs:
-    pose = pose_from_pdb(f"./PDBs/{pdb}.pdb")
-    poses.append(pose)
+pdb_path = sys.argv[1]
+pose = get_pdb_and_cleanup(str(pdb_path))
 
 scorefxn = get_fa_scorefxn()
 fr = FastRelax()
@@ -44,11 +43,7 @@ apcg.set_use_harmonic_function(True)
 add_csts = AddConstraints()
 add_csts.add_generator(apcg)
 
-harm_poses = []
-for pose in poses:
-    harm_pose = pose.clone()
-    add_csts.apply(harm_pose)
-    harm_poses.append(harm_pose)
+add_csts.apply(pose)
 
 
 scorefxn.set_weight(atom_pair_constraint, 1.0)
@@ -56,11 +51,10 @@ fr.set_scorefxn(scorefxn)
 fr.set_task_factory(tf)
 fr.set_movemap_factory(mmf)
 
-for harm_pose in harm_poses:
-    print("Before:", scorefxn(harm_pose))
-    fr.apply(harm_pose)
-    print("After:", scorefxn(harm_pose))
-    # changed name for changed sd
-    name = re.sub(r"(./PDBs/\w{4}).pdb",
-                  r"\1_all.pdb", harm_pose.pdb_info().name())
-    harm_pose.dump_pdb(name)
+print("Before:", scorefxn(pose))
+fr.apply(pose)
+print("After:", scorefxn(pose))
+# changed name for changed sd
+name = re.sub(r"(.*\w{4}).pdb",
+              r"\1_relaxed.pdb", pose.pdb_info().name())
+pose.dump_pdb(name)

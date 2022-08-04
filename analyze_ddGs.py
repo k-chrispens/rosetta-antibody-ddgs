@@ -193,9 +193,9 @@ def analyze_output_folder( output_folder ):
         scores = pd.concat( inner_scores_list )
         ddg_scores, struct_scores = calc_ddg( scores )
         struct_scores_dfs.append( struct_scores )
-        ddg_scores_dfs.append( ddg_scores )
+#         ddg_scores_dfs.append( ddg_scores )
         ddg_scores_dfs.append( apply_zemu_gam(ddg_scores) )
-        # ddg_scores_dfs.extend( calc_dgs( scores ) )
+        ddg_scores_dfs.extend( calc_dgs( scores ) )
 
     if not os.path.isdir(script_output_folder):
         os.makedirs(script_output_folder)
