@@ -15,6 +15,7 @@ data = pd.read_csv("~/rosetta-antibody-ddgs/raw_datasets/use_this_data.csv")
 
 ### Plotting average LD per PDB NOTE: for interface mutations
 
+
 averages = pd.DataFrame()
 averages["#PDB"] = data["#PDB"].unique()
 averages_list = []
@@ -25,6 +26,7 @@ for pdb in averages["#PDB"]:
     averages_list.append(sum(lds) / len(lds))
 
 averages["Average LD"] = averages_list
+fig, ax = plt.subplots(figsize=(9, 13))
 barplt = sns.barplot(x="Average LD", y="#PDB", data = averages)
 plt.savefig("./images/average_LD_per_PDB.png")
 plt.clf()
@@ -40,6 +42,7 @@ for source in averages["Source"]:
     averages_list.append(sum(lds) / len(lds))
 
 averages["Average LD"] = averages_list
+fig, ax = plt.subplots(figsize=(13, 9))
 barplt = sns.barplot(x="Source", y="Average LD", data=averages)
 plt.savefig("./images/average_LD_per_source.png")
 plt.clf()
@@ -236,7 +239,7 @@ plt.ylabel("")
 plt.savefig("./images/coeffs_2_9114.png")
 plt.clf()
 
-## Correlation Plot
+## Correlation Plots
 
 ddgs = pd.read_excel("./FLEX_RUNS.xlsx", "Sheet1")
 ddgs = ddgs.dropna(subset="8 50 r s")
@@ -248,8 +251,54 @@ results = model.fit()
 print(results.summary())
 fig, ax = plt.subplots(figsize=(13, 10))
 sns.regplot(y="8 50 r s", x="ddG(kcal/mol)", data=ddgs, color="darkcyan", truncate=False, scatter_kws={"s": 20})
-plt.title("Best Current Correlation")
+plt.title("50 Structures, 5000 Backrub Steps")
 plt.xlabel("Experimental ΔΔG (kcal/mol)")
 plt.ylabel("Predicted ΔΔG (kcal/mol)")
 plt.savefig("./images/current_best_corr.png")
+plt.clf()
+
+ddgs = pd.read_csv("./analysis_output/aligned_no_gam.csv")
+y, X = dmatrices("Q('total_score') ~ Q('ddG(kcal/mol)')",
+                 data=ddgs, return_type='dataframe')
+model = sm.OLS(y, X)
+results = model.fit()
+print(results.summary())
+fig, ax = plt.subplots(figsize=(13, 10))
+sns.regplot(y="total_score", x="ddG(kcal/mol)", data=ddgs, color="darkcyan", truncate=False, scatter_kws={"s": 20})
+plt.title("10 Structures, 10 Backrub Steps")
+plt.xlabel("Experimental ΔΔG (kcal/mol)")
+plt.ylabel("Predicted ΔΔG (kcal/mol)")
+plt.savefig("./images/10_10_no_gam_corr.png")
+plt.clf()
+
+ddgs = pd.read_csv("./analysis_output/aligned_gam.csv")
+y, X = dmatrices("Q('total_score') ~ Q('ddG(kcal/mol)')",
+                 data=ddgs, return_type='dataframe')
+model = sm.OLS(y, X)
+results = model.fit()
+print(results.summary())
+fig, ax = plt.subplots(figsize=(13, 10))
+sns.regplot(y="total_score", x="ddG(kcal/mol)", data=ddgs, color="darkcyan", truncate=False, scatter_kws={"s": 20})
+plt.title("10 Structures, 10 Backrub Steps, GAM Reweight")
+plt.xlabel("Experimental ΔΔG (kcal/mol)")
+plt.ylabel("Predicted ΔΔG (kcal/mol)")
+plt.savefig("./images/10_10_gam_corr.png")
+plt.clf()
+
+# Numbers of mutations in certain bins
+
+data = pd.read_csv("./raw_datasets/use_this_data.csv")
+
+df = pd.DataFrame({
+    "Types": ["Single Mutation to Alanine", "Multiple Mutations", "Multiple Mutations (None Alanine)", "Small to Large Mutations"],
+    "Counts": [data["Single_mut_A"].sum(), data["Multiple_mut"].sum(), data["Multiple_mut_no_A"].sum(), data["Small_to_large"].sum()]
+})
+
+fig, ax = plt.subplots(figsize=(13, 13))
+mut_types = sns.barplot(x="Types", y="Counts", data=df, palette="crest")
+plt.xticks(rotation=45, ha='right', rotation_mode="anchor")
+plt.title("Types of Mutations in Dataset")
+mut_types.set(xlabel=None)
+plt.tight_layout()
+plt.savefig("./images/mut_types.png")
 plt.clf()
