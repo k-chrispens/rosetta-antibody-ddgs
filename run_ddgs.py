@@ -136,8 +136,8 @@ if __name__ == '__main__':
             if start == mut:
                 continue
             else:
-                pos = str(posi) + ic
+                pos = str(pos) + ic
                 residue_to_mutate = (chain, pos, mut)
-                
+                pdb = re.sub(r"[.\w\/_]*\/(\w{4})[.\w\/_]*.pdb", r"\1", path)
                 print(residues_to_mutate)
                 run_flex_ddg_saturation('{}_{}{}{}'.format(pdb, start, pos, mut), path, jump, residue_to_mutate, nstruct_i)

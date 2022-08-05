@@ -16,10 +16,10 @@ echo "JUMP: ${jump}"
 echo "POSITIONS: ${positions}"
 echo "NTASKS: ${numtasks}"
 
-id=$(sbatch --export=NONE --ntasks=${numtasks} ddgs.sh ${pdbarray[0]} ${output})
-echo "submitted initial job $id for pdb ${pdbarray[0]}"
-for i in "${pdbarray[@]:1}"; do
-  id=$(sbatch --export=NONE --ntasks=${numtasks} ddgs_flex.sh $i ${output});
-  echo "submitted job $id for pdb $i"
+id=$(sbatch --export=NONE --ntasks=${numtasks} ddgs_final.sh ${positions[0]} ${output} ${jump} ${input})
+echo "submitted initial job $id for position ${positions[0]}"
+for i in "${positions[@]:1}"; do
+  id=$(sbatch --export=NONE --ntasks=${numtasks} ddgs_final.sh $i ${output} ${jump} ${input});
+  echo "submitted job $id for position $i"
 done
 id=$(sbatch --export=NONE --ntasks=1 get_csv.sh ${output} --depend=afterany:$id)
