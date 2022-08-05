@@ -1,8 +1,6 @@
 """Taken from the flex-ddG tutorial
 https://github.com/Kortemme-Lab/flex_ddG_tutorial/blob/master/run_example_2_saturation.py
-and modified to fit the dataset I have"""
-
-#!/usr/bin/python
+and modified for ease of use"""
 
 import socket
 import sys
@@ -13,16 +11,11 @@ import pandas as pd
 import getopt
 import re
 
-use_multiprocessing = False # Maybe turn this on later if there's some pdbs that take especially long — also could delete some of the far residues.
-if use_multiprocessing:
-    import multiprocessing
-    max_cpus = 4  # We might want to not run on the full number of cores, as Rosetta take about 2 Gb of memory per instance
-
 args = sys.argv[1:]
-options = "e:o:n:t:"
+options = "e:o:t:i:j:p:"
 long_options = ["ensemble_size=",
-                "output_path=", "pdbs=", "trials="]
-values_dict = {"e": 1, "o": "UNNAMED", "n": "all", "t": 5000}
+                "output_path=", "trials=", "input=", "jump=", "positions="]
+values_dict = {"e": 10, "o": "UNNAMED", "t": 10000, "i": None, "j": 0, "p": []}
 
 try:
     # Parsing argument
@@ -39,14 +32,22 @@ try:
             values_dict["o"] = currentValue
             print(f"Output path = {currentValue}")
 
-        elif currentArgument in ("-n", "--pdbs"):
-            values_dict["n"] = re.split(",", currentValue)
-            print("PDBs:", currentValue)
-
         elif currentArgument in ("-t", "--trials"):
             values_dict["t"] = currentValue
             print(f"Backrub Trials = {currentValue}")
 
+        elif currentArgument in ("-i", "--input"):
+            values_dict["i"] = currentValue
+            print(f"Input PDB = {currentValue}")
+
+        elif currentArgument in ("-j", "--jump"):
+            values_dict["j"] = currentValue
+            print(f"Jump = {currentValue}")
+
+        elif currentArgument in ("-p", "--positions"):
+            values_dict["p"] = re.split(",", currentValue)
+            print(f"Positions = {currentValue}")
+            
 except getopt.error as err:
     # output error, and return with an error code
     print(str(err))
@@ -64,11 +65,7 @@ abs_score_convergence_thresh = 1.0  # Normally 1.0
 number_backrub_trials = int(values_dict['t'])  # Normally 35000
 # Can be whatever you want, if you would like to see results from earlier time points in the backrub trajectory. 7000 is a reasonable number, to give you three checkpoints for a 35000 step run, but you could also set it to 35000 for quickest run time (as the final minimization and packing steps will only need to be run one time).
 backrub_trajectory_stride = int(values_dict['t'])
-path_to_script = 'ddG_backrub_og.xml' # Use ddG_backrub.xml for REF2015 energy function.
-# Getting data from the dataset
-data = pd.read_csv("./raw_datasets/use_this_data.csv")
-points = data.loc[data["Interface?"] == True]
-points = points.loc[points["LD"] == 1] # Comment out to do all mutants
+path_to_script = 'ddG_backrub_og.xml' # Use ddG_backrub.xml for REF2015 energy function. MUST ALSO DELETE "-restore_talaris_behavior"!
 
 if not os.path.isfile(rosetta_scripts_path):
     print('ERROR: "rosetta_scripts_path" variable must be set to the location of the "rosetta_scripts" binary executable')
@@ -85,11 +82,10 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
     resfile_path = os.path.join(output_directory, 'mutate_%s.resfile' % (name))
     with open(resfile_path, 'w') as f:
         f.write('NATRO\nstart\n')
-        for mut in mut_info:
-            # chains, pos, mut
-            mutation_chain, pos, mut_aa = mut
-            f.write('%s %s PIKAA %s\n' %
-                (pos[0], mutation_chain[0], mut_aa[0]))
+        # chains, pos, mut
+        mutation_chain, pos, mut_aa = mut_info
+        f.write('%s %s PIKAA %s\n' %
+            (pos, mutation_chain, mut_aa))
 
     flex_ddg_args = [
         os.path.abspath(rosetta_scripts_path),
@@ -102,7 +98,7 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
         'max_minimization_iter=%d' % max_minimization_iter,
         'abs_score_convergence_thresh=%.1f' % abs_score_convergence_thresh,
         'backrub_trajectory_stride=%d' % backrub_trajectory_stride,
-        '-restore_talaris_behavior',
+        '-restore_talaris_behavior', # MUST DELETE FOR REF2015 FUNCTION
         '-in:file:fullatom',
         '-ignore_unrecognized_res',
         '-ignore_zero_occupancy false',
@@ -127,39 +123,21 @@ def run_flex_ddg_saturation(name, input_pdb_path, jump, mut_info, nstruct_i):
 
 if __name__ == '__main__':
 
-    for pdb in values_dict["n"]:
-        path = f"./inputs/{pdb}_all.clean.pdb"
-        points_pdb = points.loc[points["#PDB"] == pdb]
-        for index, point in points_pdb.iterrows():
-            for nstruct_i in range(1, nstruct + 1):
-                residues_to_mutate = []
-                name_muts = re.sub(";", "_", point["Mutations"])
-                muts = re.split(";", point["Mutations"])
-                jump = point["Jump"]
-                pos = []
-                chains = []
-                mut = []
-                all = list(map(lambda x: re.sub(
-                    r"(\w):(\w)(\d+)(\w*)(\w)", r"\1:\2:\3:\5:\4", x), muts))
+    path = values_dict["i"]
+    jump = values_dict["j"]
+    for nstruct_i in range(1, nstruct + 1):
+        residues_to_mutate = []
+        positions = values_dict["p"]
+        positions = re.sub(r"(\w):(\w)(\d+)(\w*)", r"\1:\2:\3:\4", positions)
 
-                for i in all:
-                    chain, start, posi, muta, ic = re.split(":", i)
-                    chains.append(chain)
-                    pos.append(str(posi) + ic)
-                    mut.append(muta)
-                residues_to_mutate.append((chains, pos, mut))
-
+        for aa in "ACDEFGHIKLMNPQRSTVWY":
+            chain, start, pos, ic = re.split(":", positions)
+            mut = aa
+            if start == mut:
+                continue
+            else:
+                pos = str(posi) + ic
+                residue_to_mutate = (chain, pos, mut)
                 
-                if use_multiprocessing:
-                    pool = multiprocessing.Pool(processes=min(
-                        max_cpus, multiprocessing.cpu_count()))
-
-                if use_multiprocessing:
-                    pool.apply_async(run_flex_ddg_saturation, args=args)
-                else:
-                    print(residues_to_mutate)
-                    run_flex_ddg_saturation('{}_{}'.format(pdb, name_muts), path, jump, residues_to_mutate, nstruct_i)
-
-                if use_multiprocessing:
-                    pool.close()
-                    pool.join()
+                print(residues_to_mutate)
+                run_flex_ddg_saturation('{}_{}{}{}'.format(pdb, start, pos, mut), path, jump, residue_to_mutate, nstruct_i)

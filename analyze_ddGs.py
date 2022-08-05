@@ -193,9 +193,9 @@ def analyze_output_folder( output_folder ):
         scores = pd.concat( inner_scores_list )
         ddg_scores, struct_scores = calc_ddg( scores )
         struct_scores_dfs.append( struct_scores )
-#         ddg_scores_dfs.append( ddg_scores )
+        ddg_scores_dfs.append( ddg_scores )
         ddg_scores_dfs.append( apply_zemu_gam(ddg_scores) )
-        ddg_scores_dfs.extend( calc_dgs( scores ) )
+#         ddg_scores_dfs.extend( calc_dgs( scores ) )
 
     if not os.path.isdir(script_output_folder):
         os.makedirs(script_output_folder)
@@ -204,6 +204,7 @@ def analyze_output_folder( output_folder ):
     # pd.concat( struct_scores_dfs ).to_csv( os.path.join(script_output_folder, basename + '_struct_scores_results.csv' ) )
 
     df = pd.concat( ddg_scores_dfs )
+    df[["PDB", "Mutations"]] = df["case_name"].str.split(pat="_", expand=True)
     df.to_csv( os.path.join(script_output_folder, basename + '_results.csv') )
 
     display_columns = ['backrub_steps', 'case_name', 'nstruct', 'score_function_name', 'scored_state', 'total_score']
