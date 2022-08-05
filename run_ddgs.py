@@ -125,19 +125,20 @@ if __name__ == '__main__':
 
     path = values_dict["i"]
     jump = values_dict["j"]
-    for nstruct_i in range(1, nstruct + 1):
-        residues_to_mutate = []
-        positions = values_dict["p"]
-        positions = re.sub(r"(\w):(\w)(\d+)(\w*)", r"\1:\2:\3:\4", positions)
+    positions = values_dict["p"]
+    for position in positions:
+        position = re.sub(r"(\w):(\w)(\d+)(\w*)", r"\1:\2:\3:\4", position)
 
-        for aa in "ACDEFGHIKLMNPQRSTVWY":
-            chain, start, pos, ic = re.split(":", positions)
-            mut = aa
-            if start == mut:
-                continue
-            else:
-                pos = str(pos) + ic
-                residue_to_mutate = (chain, pos, mut)
-                pdb = re.sub(r"[.\w\/_]*\/(\w{4})[.\w\/_]*.pdb", r"\1", path)
-                print(residues_to_mutate)
-                run_flex_ddg_saturation('{}_{}{}{}'.format(pdb, start, pos, mut), path, jump, residue_to_mutate, nstruct_i)
+        for nstruct_i in range(1, nstruct + 1):
+            residues_to_mutate = []
+            for aa in "ACDEFGHIKLMNPQRSTVWY":
+                chain, start, pos, ic = re.split(":", position)
+                mut = aa
+                if start == mut:
+                    continue
+                else:
+                    pos = str(pos) + ic
+                    residue_to_mutate = (chain, pos, mut)
+                    pdb = re.sub(r"[.\w\/_]*\/(\w{4})[.\w\/_]*.pdb", r"\1", path)
+                    print(residues_to_mutate)
+                    run_flex_ddg_saturation('{}_{}{}{}'.format(pdb, start, pos, mut), path, jump, residue_to_mutate, nstruct_i)
