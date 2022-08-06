@@ -24,7 +24,7 @@ Then ensure that you have either cloned the whole repository or have downloaded 
 python harmonic_prerelax.py PATH_TO_PDB
 ```
 
-Now, to run the PyRosetta version of the script, use `predict_ddg_py.sh`. To run the RosettaScripts version, use `predict_ddg.sh`. I have listed the process for `predict_ddg_py.sh` here. Both take the same command line arguments, but the RosettaScripts version requires that you set the path to your RosettaScripts executable in `run_ddgs.py`.
+Now, to run the PyRosetta version of the script, use `predict_ddg_py.sh`. To run the RosettaScripts version, use `predict_ddg.sh`. I have listed the process for `predict_ddg_py.sh` here. Both take the same command line arguments, but the RosettaScripts version requires that you set the path to your RosettaScripts executable in `run_ddgs.py`. The PyRosetta version has the REF2015 score function as default, while the RosettaScripts version defaults to the Talaris score function. The PyRosetta version does not yet output PDBs like the RosettaScripts version.
 
 Running the script:
 
@@ -32,7 +32,7 @@ Running the script:
 ./predict_ddg_py.sh -p POSITION -o OUTPUT_PATH -i INPUT_PDB_PATH -j JUMP_NUMBER -n NUM_TASKS
 ```
 
-Position arguments must be listed in the form (CHAIN):(WT_AA)(PDB_INDEX), e.g. H:D32 or L:S100B with an insertion code. Multiple positions can be entered at once, and should be entered with commas between them, e.g. H:D32,L:S100B, ...
+Position arguments must be listed in the form (CHAIN):(WT_AA)(PDB_INDEX), e.g. H:D32 or L:S100B with an insertion code. Multiple positions can be entered at once, and should be entered with spaces between them, e.g. H:D32 L:S100B, ...
 
 The jump number will be used to properly unbind the antibody from the antigen, and can be found using the `find_jumps.ipynb` notebook.
 
@@ -44,3 +44,5 @@ An example script that can be run using files in this repository is:
 ./predict_ddg_py.sh -p H:D32 -o ./example -i ./inputs/1DQJ_all.clean.pdb -j 1 -n 1
 ```
 
+## Questions and Issues
+Please open an issue on GitHub if you have any questions or issues.

@@ -5,7 +5,7 @@ do
 	o) output=${OPTARG};;
 	i) input=${OPTARG};;
 	j) jump=${OPTARG};;
-	p) positions=${OPTARG};;
+	p) positions=(${OPTARG});;
 	n) numtasks=${OPTARG};;
     esac
 done
