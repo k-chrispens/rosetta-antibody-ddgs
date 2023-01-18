@@ -7,7 +7,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mail-type=END
-#SBATCH --mail-user=YOUR EMAIL HERE
+#SBATCH --mail-user=karson.chrispens@colorado.edu
 
 source ~/.bashrc
 which python
