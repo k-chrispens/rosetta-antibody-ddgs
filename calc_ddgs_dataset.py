@@ -18,11 +18,11 @@ import getopt
 import sys
 
 args = sys.argv[1:]
-options = "r:p:bo:csai:t:x:j:"
+options = "r:p:bo:csan:t:l:"
 long_options = ["repack_range=", "backrub=",
-                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "input=", "trials=", "positions=", "jump="]
+                "beta", "output_path=", "cartesian", "soft_rep", "all_repack", "pdbs=", "trials=", "ld="]
 values_dict = {"r": 8, "p": 1, "b": False,
-               "o": "./UNNAMED.csv", "c": False, "s": True, "a": True, "i": None, "t": 5000, "x": None, "j": None}
+               "o": "./UNNAMED.csv", "c": False, "s": False, "a": False, "n": "all", "t": 5000, "l": 1}
 
 try:
     # Parsing argument
@@ -58,25 +58,19 @@ try:
             values_dict["a"] = True
             print("Repacking all residues")
         
-        elif currentArgument in ("-i", "--input"):
-            values_dict["i"] = re.split(" ", currentValue)
+        elif currentArgument in ("-n", "--pdbs"):
+            values_dict["n"] = re.split(",", currentValue)
             print("PDBs:", currentValue)
 
         elif currentArgument in ("-t", "--trials"):
             values_dict["t"] = currentValue
             print(f"Backrub Trials = {currentValue}")
 
-        elif currentArgument in ("-x", "--positions"):
-            values_dict["x"] = re.split(" ", currentValue)
-            print(f"Positions = {currentValue}")
-
-        elif currentArgument in ("-j", "--jump"):
-            values_dict["j"] = currentValue
-            print(f"Jump = {currentValue}")
-
 except getopt.error as err:
     # output error, and return with an error code
     print(str(err))
+
+data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
 # INIT
 # NOTE: Why use soft_rep_design? Kellogg et al. 2011
@@ -92,9 +86,10 @@ else:
     pyrosetta.init(
         "-ex1 -ex2 -linmem_ig 10 -use_input_sc -mute all -backrub:mc_kt 1.2 -backrub:ntrials {} -nstruct 1".format(values_dict["t"]))
 print(values_dict)
-path = str(values_dict["i"])
-pdb = re.sub(r"[.\w\/_]*\/(\w{4})[.\w\/_]*.pdb", r"\1", path)
+data = pd.read_csv("./raw_datasets/use_this_data.csv")
 
+
+# TESTING (Seems like nbr_selector and scorefxn params are not required, but need to be required if this is a unit function)
 def backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn):
 
     start = time.time()
@@ -112,6 +107,25 @@ def backrub_ensemble_gen(pose, nbr_selector, mmf, tf, scorefxn):
     end = time.time()
     print("Backrub time: ", end-start, "seconds")
 
+    # GMC = pyrosetta.rosetta.protocols.monte_carlo.GenericMonteCarloMover(mover=backrubber, scorefxn=scorefxn, maxtrials=50000, temperature=1.2, max_accepted_trials=)
+    # GMC.set_mover(backrub)
+    # GMC.set_scorefxn(scorefxn)
+    # GMC.set_maxtrials(500)
+    # GMC.set_temperature(1.0)
+    # GMC.set_preapply(False)
+    # GMC.set_recover_low(True)
+    # GMC.apply(pose)
+
+    # ensemble = []
+    # for _ in range(values_dict["p"]):
+    #     clone = Pose()
+    #     clone.detached_copy(pose)
+    #     backrubber.apply(clone)
+    #     ensemble.append(clone)
+
+    # return ensemble
+
+
 def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
 
     mut_posi = []
@@ -122,7 +136,7 @@ def pack_and_relax(pose, posi, amino, repack_range, scorefxn):
         mut_posi.append(
             pyrosetta.rosetta.core.select.residue_selector.ResidueIndexSelector())
         mut_posi[i].set_index(posi[i])
-
+    # print(pyrosetta.rosetta.core.select.get_residues_from_subset(mut_posi.apply(pose)))
     if len(posi) == 1:
         comb_select = mut_posi[0]
     if len(posi) >= 2:
@@ -282,6 +296,10 @@ def calc_ddg(pose, pos, wt, mut, repack_range, jump, output_pdb=False):
     return ddG, rmsd_mutated
 
 
+if values_dict["n"] == "all":
+    pdbs = data["#PDB"].unique() # TESTING FIXME
+else:
+    pdbs = values_dict["n"] # TESTING FIXME
 df = pd.DataFrame(columns=["#PDB", "Position", "WT_AA", "Mut_AA", "DDG"])
 
 # need cartesian score function for minimization (if cart is chosen.)
@@ -299,26 +317,44 @@ ddg_scorefxn = get_score_function()
 repack_range = int(values_dict["r"]) # 8 default is from flex-ddg
 
 count = 0
-pose = get_pdb_and_cleanup(path)
-jump = values_dict["j"]
 
-for pos in values_dict["x"]:
-    position = re.sub(r"(\w):(\w)(\d+)(\w*)", r"\1:\2:\3:\4", pos)
-    chain, wt, pos, ic = re.split(":", position)
-    
-    if ic:
-        pos = pose.pdb_info().pdb2pose(chain, int(pos), ic)
-    else:
-        pos = pose.pdb_info().pdb2pose(chain, int(pos))
+for pdb in pdbs:
+    points = data.loc[data["#PDB"] == pdb]
+    points = points.loc[points["Interface?"] == True]
+    if values_dict["l"] == 1:
+        points = points.loc[points["LD"] == 1]  # TESTING FIXME
+    elif values_dict["l"] == 2:
+        points = points.loc[points["LD"] == 2]  # TESTING FIXME
+    elif values_dict["l"] == 3:
+        points = points.loc[points["LD"] == 3]  # TESTING FIXME
+    elif values_dict["l"] == 4:
+        points = points.loc[points["LD"] == 4]  # TESTING FIXME
+        
+    pose = get_pdb_and_cleanup(f"./PDBs/{pdb}_all.pdb")
+    for index, point in points.iterrows():
+        muts = re.split(";", point["Mutations"])
+        jump = point["Jump"]
+        pos = []
+        wt = []
+        mut = []
+        all = list(map(lambda x: re.sub(
+            r"(\w):(\w)(\d+)(\w*)(\w)", r"\1:\2:\3:\5:\4", x), muts))
+        print(all)
+        for i in all:
+            chain, start, posi, muta, ic = re.split(":", i)
+            if ic:
+                pos.append(pose.pdb_info().pdb2pose(chain, int(posi), ic))
+            else:
+                pos.append(pose.pdb_info().pdb2pose(chain, int(posi)))
+            wt.append(start)
+            mut.append(muta)
 
-    start = time.time()
-    print("Mutations:", pos)
-    total = 0
-    rmsd_total = 0
-    muts = "ACDEFGHIKLMNPQRSTVWY"
-    for mut in muts:
+        start = time.time()
+        print("Mutations:", point["Mutations"])
+        total = 0
+        rmsd_total = 0
         for _ in range(int(values_dict["p"])):
-            ddg, rmsd = calc_ddg(pose, pos, wt, mut, repack_range, jump, False)
+            ddg, rmsd = calc_ddg(pose, pos, wt, mut, repack_range, jump, True)
             total += ddg
             rmsd_total += rmsd
         total = total / int(values_dict["p"])
@@ -326,14 +362,14 @@ for pos in values_dict["x"]:
         print("DDG: ", total)
         print("RMSD: ", rmsd_total)
         df = pd.concat([df, pd.DataFrame({"#PDB": pdb, "Position": pos, "WT_AA": wt,
-                                            "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True, sort=True)
+                                          "Mut_AA": mut, "DDG": total, "RMSD": rmsd_total})], ignore_index=True, sort=True)
         end = time.time()
         print("Total time:", end-start, "seconds")
         print("Avg time per ensemble member:",
-                (end-start)/int(values_dict["p"]), "seconds")
+              (end-start)/int(values_dict["p"]), "seconds")
         count += 1
         if count % 2 == 0:
-            df.to_csv("./analysis_output/{}".format(values_dict["o"]), index=False)
+            df.to_csv(values_dict["o"], index=False)
             print("Wrote to csv.", flush=True)
 
-df.to_csv("./analysis_output/{}".format(values_dict["o"]), index=False)
+df.to_csv(values_dict["o"], index=False)
