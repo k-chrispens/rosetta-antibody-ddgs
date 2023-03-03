@@ -32,7 +32,7 @@ Running the script:
 ./predict_ddg_py.sh -p POSITION -o OUTPUT_PATH -i INPUT_PDB_PATH -j JUMP_NUMBER -n NUM_TASKS
 ```
 
-Position arguments must be listed in the form (CHAIN):(WT_AA)(PDB_INDEX), e.g. H:D32 or L:S100B with an insertion code. Multiple positions can be entered at once, and should be entered with spaces between them, e.g. H:D32 L:S100B ...
+Position arguments must be listed in the form (CHAIN):(WT_AA)(PDB_INDEX), e.g. H:D32 or L:S100B with an insertion code. Multiple positions can be entered at once, and should be entered as a bash array with spaces between positions, e.g. (H:D32 L:S100B ...)
 
 The jump number will be used to properly unbind the antibody from the antigen, and can be found using the `find_jumps.ipynb` notebook.
 

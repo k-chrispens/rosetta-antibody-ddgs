@@ -13,7 +13,7 @@ done
 echo "OUTPUT FOLDER: ${output}"
 echo "INPUT: ${input}"
 echo "JUMP: ${jump}"
-echo "POSITIONS: ${positions}"
+echo "POSITIONS: ${positions[*]}"
 echo "NTASKS: ${numtasks}"
 
 id=$(sbatch --export=NONE --ntasks=${numtasks} ddgs_final.sh ${positions[0]} ${output} ${jump} ${input})
