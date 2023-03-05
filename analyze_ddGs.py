@@ -19,7 +19,7 @@ import threading
 rosetta_output_file_name = 'rosetta.out'
 output_database_name = 'ddG.db3'
 trajectory_stride = 35000
-script_output_folder = 'analysis_output'
+script_output_folder = sys.argv[2]
 
 zemu_gam_params = {
     'fa_sol' :      (6.940, -6.722),

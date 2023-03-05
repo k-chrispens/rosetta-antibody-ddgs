@@ -12,10 +12,10 @@ import getopt
 import re
 
 args = sys.argv[1:]
-options = "e:o:t:i:j:p:"
+options = "e:o:t:i:j:p:a:"
 long_options = ["ensemble_size=",
-                "output_path=", "trials=", "input=", "jump=", "positions="]
-values_dict = {"e": 10, "o": "UNNAMED", "t": 10000, "i": None, "j": 0, "p": []}
+                "output_path=", "trials=", "input=", "jump=", "positions=", "aas="]
+values_dict = {"e": 10, "o": "UNNAMED", "t": 10000, "i": None, "j": 0, "p": [], "a": "ACDEFGHIKLMNPQRSTVWY"}
 
 try:
     # Parsing argument
@@ -47,7 +47,10 @@ try:
         elif currentArgument in ("-p", "--positions"):
             values_dict["p"] = re.split(",", currentValue)
             print(f"Positions = {currentValue}")
-            
+
+        elif currentArgument in ("-a", "--aas"):
+            values_dict["a"] = currentValue
+            print(f"Amino Acids to Mutate To = {currentValue}")
 except getopt.error as err:
     # output error, and return with an error code
     print(str(err))
@@ -126,12 +129,12 @@ if __name__ == '__main__':
     path = values_dict["i"]
     jump = values_dict["j"]
     positions = values_dict["p"]
+    aas = values_dict["a"]
     for position in positions:
         position = re.sub(r"(\w):(\w)(\d+)(\w*)", r"\1:\2:\3:\4", position)
 
-        for nstruct_i in range(1, nstruct + 1):
-            residues_to_mutate = []
-            for aa in "ACDEFGHIKLMNPQRSTVWY":
+        for aa in aas:
+            for nstruct_i in range(1, nstruct + 1):
                 chain, start, pos, ic = re.split(":", position)
                 mut = aa
                 if start == mut:
@@ -140,5 +143,4 @@ if __name__ == '__main__':
                     pos = str(pos) + ic
                     residue_to_mutate = (chain, pos, mut)
                     pdb = re.sub(r"[.\w\/_]*\/(\w{4})[.\w\/_]*.pdb", r"\1", path)
-                    print(residues_to_mutate)
                     run_flex_ddg_saturation('{}_{}{}{}'.format(pdb, start, pos, mut), path, jump, residue_to_mutate, nstruct_i)
